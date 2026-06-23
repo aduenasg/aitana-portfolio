@@ -1,44 +1,46 @@
 /**
- * WorkCard
- * Props:
- *   number   {string}  – display number, e.g. "01"
- *   category {string}  – small uppercase label
- *   title    {string}  – project name
- *   image    {string}  – optional photo URL
- *   variant  {string}  – "" | "warm" | "cool"  (background tint)
- *   wide     {boolean} – spans 2 grid columns
+ * WorkCard — mejorado estéticamente
+ * Imagen a pantalla completa con overlay elegante y zoom sutil en hover
+ * Si id === '__process__' enlaza a /proceso-clo3d en vez de /proyecto/:id
  */
 import { Link } from 'react-router-dom';
 
 const WorkCard = ({ id, number, category, title, image, variant = '', wide = false }) => {
-  const imageClass = [
-    'work-card__image',
-    variant === 'warm' ? 'work-card__image--warm' : '',
-    variant === 'cool' ? 'work-card__image--cool' : '',
-  ]
-    .filter(Boolean)
-    .join(' ');
+  const cardClass = [
+    'work-card',
+    wide ? 'work-card--wide' : '',
+    variant ? `work-card--${variant}` : '',
+  ].filter(Boolean).join(' ');
+
+  const href = id === '__process__'
+    ? '/proceso-clo3d'
+    : id === '__coleccion3d__'
+    ? '/coleccion-3d'
+    : `/proyecto/${id}`;
 
   return (
     <Link
-      to={`/proyecto/${id}`}
-      className={`work-card${wide ? ' work-card--wide' : ''}`}
+      to={href}
+      className={cardClass}
       aria-label={`Ver proyecto: ${title}`}
     >
-      <div className={imageClass}>
-        {image && <img src={image} alt={title} />}
+      <div className="work-card__image-wrap">
+        {image && <img src={image} alt={title} className="work-card__img" />}
+        <div className="work-card__gradient" />
 
-        <span className="work-card__number">{number}</span>
+        {/* Number watermark */}
+        <span className="work-card__number" aria-hidden="true">{number}</span>
 
-        <div className="work-card__overlay">
-          <span className="work-card__cta">Ver proyecto</span>
-          <p className="work-card__overlay-title">{title}</p>
+        {/* Bottom info always visible */}
+        <div className="work-card__info">
+          <p className="work-card__category">{category}</p>
+          <p className="work-card__title">{title}</p>
         </div>
-      </div>
 
-      <div className="work-card__meta">
-        <p className="work-card__category">{category}</p>
-        <p className="work-card__title">{title}</p>
+        {/* Hover CTA */}
+        <div className="work-card__overlay">
+          <span className="work-card__cta">Ver proyecto →</span>
+        </div>
       </div>
     </Link>
   );

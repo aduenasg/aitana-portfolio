@@ -8,15 +8,15 @@ const Hero = ({ heroImage }) => (
 
     {/* ── Left column ── */}
     <div className="hero__left">
-      <p className="hero__tag">Estilista · Directora creativa · Madrid</p>
+      <p className="hero__tag hero-anim hero-anim--1">Estilista · Directora creativa · Madrid</p>
 
       <h1 className="hero__title">
-        <span className="hero__title--outline">Fashion</span>
-        is my
-        <span className="hero__title--italic">language.</span>
+        <span className="hero__title--outline hero-word hero-word--1">Fashion</span>
+        <span className="hero-word hero-word--2">is my</span>
+        <span className="hero__title--italic hero-word hero-word--3">language.</span>
       </h1>
 
-      <div className="hero__bottom">
+      <div className="hero__bottom hero-anim hero-anim--5">
         <p className="hero__desc">
           Colecciones que hablan sin palabras. Más de diez años creando universos
           visuales donde cada prenda cuenta una historia diferente.
@@ -26,7 +26,7 @@ const Hero = ({ heroImage }) => (
     </div>
 
     {/* ── Right column ── */}
-    <div className="hero__right">
+    <div className="hero__right hero-anim hero-anim--3">
       <div className="hero__image-frame">
         {heroImage ? (
           <img src={heroImage} alt="Aitana Núñez" />
@@ -46,9 +46,7 @@ const Hero = ({ heroImage }) => (
             <line x1="50" y1="56" x2="64" y2="96" />
           </svg>
         )}
-        
       </div>
-
       <div className="hero__year">2026</div>
     </div>
 

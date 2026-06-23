@@ -5,9 +5,8 @@ const Navbar = () => (
       <span className="navbar__name">Aitana Núñez</span>
     </div>
     <ul className="navbar__links">
-      <li><a href="#works">Obras</a></li>
-      <li><a href="#editorial">Editorial</a></li>
-      <li><a href="#about">Studio</a></li>
+      <li><a href="#works">Trabajos Seleccionados</a></li>
+      <li><a href="#about">Acerca de mi</a></li>
       <li><a href="#contact">Contacto</a></li>
     </ul>
   </nav>

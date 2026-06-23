@@ -1,5 +1,7 @@
 /**
  * projects.js — fuente de verdad de todos los proyectos
+ * images        → fotos del producto (slider principal)
+ * processImages → fotos del proceso creativo (sección separada)
  */
 
 import BolsoImg        from '../img/Bolso.jpg';
@@ -36,6 +38,59 @@ import HofburgFicha4 from '../img/hofburg-ficha4.jpg';
 import HofburgTextil1 from '../img/hofburg-textil1.jpg';
 import HofburgTextil2 from '../img/hofburg-textil2.jpg';
 
+import ColBlancFoto1  from '../img/col-blanco-foto1.png';
+import ColBlancFoto2  from '../img/col-blanco-foto2.png';
+import ColBlancFoto3  from '../img/col-blanco-foto3.png';
+import ColBlancFoto4  from '../img/col-blanco-foto4.png';
+import ColBlancFoto5  from '../img/col-blanco-foto5.png';
+import ColBlancFoto6  from '../img/col-blanco-foto6.png';
+
+import ColGranFoto1   from '../img/col-granate-foto1.png';
+import ColGranFoto2   from '../img/col-granate-foto2.png';
+import ColGranFoto3   from '../img/col-granate-foto3.png';
+import ColGranFoto4   from '../img/col-granate-foto4.png';
+import ColGranFoto5   from '../img/col-granate-foto5.png';
+import ColGranFoto6   from '../img/col-granate-foto6.png';
+import ColGranFoto7   from '../img/col-granate-foto7.png';
+import ColGranFoto8   from '../img/col-granate-foto8.png';
+import ColGranFoto9   from '../img/col-granate-foto9.png';
+
+import ColOrgFoto1    from '../img/col-organza-foto1.png';
+import ColOrgFoto2    from '../img/col-organza-foto2.png';
+import ColOrgFoto3    from '../img/col-organza-foto3.png';
+import ColOrgFoto4    from '../img/col-organza-foto4.png';
+
+import ColSalvFoto1   from '../img/col-salvia-foto1.png';
+import ColSalvFoto2   from '../img/col-salvia-foto2.png';
+import ColSalvFoto3   from '../img/col-salvia-foto3.png';
+import ColSalvFoto4   from '../img/col-salvia-foto4.png';
+
+import ColHaltFoto1   from '../img/col-halter-foto1.png';
+import ColHaltFoto2   from '../img/col-halter-foto2.png';
+import ColHaltFoto3   from '../img/col-halter-foto3.png';
+import ColHaltFoto4   from '../img/col-halter-foto4.png';
+
+import ColNoviScen    from '../img/col-novia-escenario.png';
+import ColColecGroup  from '../img/col-coleccion-grupo.png';
+import ColNovFoto1    from '../img/col-novia-foto1.png';
+import ColNovFoto2    from '../img/col-novia-foto2.png';
+import ColNovFoto3    from '../img/col-novia-foto3.png';
+import ColNovFoto4    from '../img/col-novia-foto4.png';
+
+import ProcCover      from '../img/proceso-diseno-terminado.png';
+import ProcClo06      from '../img/proceso-clo-06.png';
+import ProcClo11      from '../img/proceso-clo-11.png';
+
+import DoradoFoto1    from '../img/dorado-foto1.jpg';
+import DoradoFoto2    from '../img/dorado-foto2.jpg';
+import DoradoFoto3    from '../img/dorado-foto3.jpg';
+import DoradoFoto4    from '../img/dorado-foto4.jpg';
+import DoradoFoto5    from '../img/dorado-foto5.jpg';
+import DoradoFoto6    from '../img/dorado-foto6.jpg';
+import DoradoFoto7    from '../img/dorado-foto7.jpg';
+import DoradoFoto8    from '../img/dorado-foto8.jpg';
+import DoradoMoodboard from '../img/dorado-moodboard.jpg';
+
 const PROJECTS = [
   /* ── 01 ── */
   {
@@ -59,15 +114,14 @@ const PROJECTS = [
       { label: 'Fotografía',         value: 'AN Studio' },
     ],
     tags: ['bolso', 'corte láser', 'piel', 'alhambra', 'nazarí', 'diseño de producto'],
-    images: [
-      BolsoFoto3, BolsoFoto1, BolsoFoto2, BolsoFoto4,
-      BolsoConcepto, BolsoColores, BolsoMateriales, BolsoDiseño, BolsoPatrones,
-    ],
+    images: [BolsoFoto3, BolsoFoto1, BolsoFoto2, BolsoFoto4],
+    processImages: [BolsoConcepto, BolsoColores, BolsoMateriales, BolsoDiseño, BolsoPatrones],
     coverBg: '#1a0a06',
     image: BolsoImg,
   },
 
-   {
+  /* ── 02 ── */
+  {
     id: 'canto-de-sirena',
     number: '02',
     category: 'Moda · Colección 2024',
@@ -88,9 +142,8 @@ const PROJECTS = [
       { label: 'Modelo',              value: 'AN Studio' },
     ],
     tags: ['vestido', 'blanco', 'macramé', 'naturaleza', 'colección', 'artesanía'],
-    images: [
-      SirenaFoto4, SirenaFoto1, SirenaFoto2, SirenaFoto3, SirenaFoto5,
-    ],
+    images: [SirenaFoto4, SirenaFoto1, SirenaFoto2, SirenaFoto3, SirenaFoto5],
+    processImages: [],
     coverBg: '#0d1208',
     image: SirenaFoto4,
   },
@@ -118,11 +171,10 @@ const PROJECTS = [
     ],
     tags: ['bolso mini', 'tote', 'piel', 'teja', 'artesanía', 'diseño de producto'],
     images: [MiniFoto1, MiniFoto2, MiniFoto3, MiniFoto4],
+    processImages: [],
     coverBg: '#1e1210',
     image: MiniFoto1,
   },
-
-
 
   /* ── 04 ── */
   {
@@ -147,126 +199,115 @@ const PROJECTS = [
       { label: 'Fotografía',          value: 'AN Studio' },
     ],
     tags: ['vestido', 'ball gown', 'novia', 'satén', 'bardot', 'colección ERBE', 'a medida'],
-    images: [
-      HofburgFoto3,   // cover: frontal arquitectura piedra
-      HofburgFoto1,   // 2-up: espalda con cola
-      HofburgFoto4,   // 2-up: perfil
-      HofburgFoto2,   // full-width: falda en parque con capa
-      HofburgFoto5,   // extra: detalle capa topo
-      HofburgFicha1,  // extra: ficha técnica diseño (manuscrita)
-      HofburgFicha2,  // extra: ficha técnica diseño (limpia)
-      HofburgFicha3,  // extra: ficha técnica capa
-      HofburgFicha4,  // extra: ficha técnica miriñaque
-      HofburgTextil1, // extra: ficha textiles
-      HofburgTextil2, // extra: ficha telar tecnología textil
-    ],
+    images: [HofburgFoto3, HofburgFoto1, HofburgFoto4, HofburgFoto2, HofburgFoto5],
+    processImages: [HofburgFicha1, HofburgFicha2, HofburgFicha3, HofburgFicha4, HofburgTextil1, HofburgTextil2],
     coverBg: '#110e0b',
     image: HofburgFoto3,
   },
 
-  /* ── 05 ── */
-  // {
-  //   id: 'oro-y-sombra',
-  //   number: '05',
-  //   category: 'Campaña · Otoño 2024',
-  //   title: 'Oro y sombra',
-  //   subtitle: 'La campaña que redefinió el otoño',
-  //   variant: 'warm',
-  //   wide: false,
-  //   year: '2024',
-  //   client: 'Sandro Paris',
-  //   role: 'Estilismo y dirección creativa',
-  //   location: 'Madrid, España',
-  //   description:
-  //     'Campaña de temporada para Sandro en la que el contraste entre el dorado cálido y las sombras profundas construye una narrativa sobre el poder femenino. La paleta cromática parte del ocre y termina en el negro absoluto.',
-  //   credits: [
-  //     { label: 'Fotografía',  value: 'Lucía Fernández' },
-  //     { label: 'Maquillaje',  value: 'Ana Torres' },
-  //     { label: 'Modelo',      value: 'Mariam El Koubi' },
-  //     { label: 'Producción',  value: 'AN Studio' },
-  //   ],
-  //   tags: ['campaña', 'otoño', 'dorado', 'poder femenino'],
-  //   images: [],
-  //   coverBg: '#161410',
-  // },
+  /* ── 06 ── Colección 3D (todos los modelos agrupados) */
+  {
+    id: '__coleccion3d__',
+    number: '05',
+    category: 'Diseño digital · CLO 3D · Colección 2025',
+    title: 'Colección 3D',
+    subtitle: 'Seis diseños simulados en CLO 3D',
+    variant: 'cool',
+    wide: false,
+    year:'2025',
+    location: 'Madrid, España',
+    description:
+      'Colección completa de seis diseños digitales creados y simulados en CLO 3D como Trabajo Final del Grado en Tecnología y Moda de la Universidad Rey Juan Carlos. El concepto gira en torno a la recuperación de la inocencia tras la guerra, transitando de la gravedad del rojo oscuro y el blanco roto hasta la ligereza del salvia y el blanco nupcial.',
+    credits: [
+      { label: 'Diseño y simulación', value: 'Aitana Núñez Ramírez' },
+      { label: 'Software',            value: 'CLO 3D 2024.2' },
+      { label: 'Institución',         value: 'URJC — Tecnología y Moda' },
+    ],
+    tags: ['CLO 3D', 'colección', 'simulación 3D', 'URJC', '2025'],
+    images: [ColBlancFoto3, ColGranFoto3, ColOrgFoto1, ColSalvFoto1, ColHaltFoto1, ColNovFoto1],
+    processImages: [ProcCover, ProcClo06, ProcClo11, ColColecGroup],
+    coverBg: '#161410',
+    image: ColBlancFoto3,
 
-  // /* ── 06 ── */
-  // {
-  //   id: 'piel-de-luna',
-  //   number: '06',
-  //   category: 'Look book · Primavera',
-  //   title: 'Piel de luna',
-  //   subtitle: 'Blanco, transparencia y luz',
-  //   variant: 'cool',
-  //   wide: false,
-  //   year: '2024',
-  //   client: 'Mango',
-  //   role: 'Estilismo completo',
-  //   location: 'Barcelona, España',
-  //   description:
-  //     'Look book de primavera-verano donde la ligereza de los tejidos dialoga con la arquitectura luminosa de la costa mediterránea. Una celebración de la feminidad sin artificios.',
-  //   credits: [
-  //     { label: 'Fotografía',  value: 'Carles Puig' },
-  //     { label: 'Maquillaje',  value: 'Neus Vidal' },
-  //     { label: 'Modelo',      value: 'Irina Shayk' },
-  //     { label: 'Producción',  value: 'AN Studio' },
-  //   ],
-  //   tags: ['lookbook', 'primavera', 'blanco', 'mediterráneo'],
-  //   images: [],
-  //   coverBg: '#0e1014',
-  // },
-
-  // /* ── 07 ── */
-  // {
-  //   id: 'el-ultimo-desfile',
-  //   number: '07',
-  //   category: 'Dirección creativa · MBFW',
-  //   title: 'El último desfile',
-  //   subtitle: 'Mercedes-Benz Fashion Week Madrid',
-  //   variant: '',
-  //   wide: true,
-  //   year: '2023',
-  //   client: 'Mercedes-Benz Fashion Week',
-  //   role: 'Directora creativa',
-  //   location: 'Madrid, España',
-  //   description:
-  //     'La dirección creativa completa de un desfile que fusionó moda, performance y arte contemporáneo. Treinta y dos looks, una banda sonora en vivo y una puesta en escena que la prensa especializada calificó como el momento del año.',
-  //   credits: [
-  //     { label: 'Fotografía',     value: 'Rodrigo Sánchez' },
-  //     { label: 'Música en vivo', value: 'Noa Lur' },
-  //     { label: 'Set design',     value: 'Estudio Blanco' },
-  //     { label: 'Producción',     value: 'AN Studio' },
-  //   ],
-  //   tags: ['desfile', 'MBFW', 'dirección creativa', 'performance'],
-  //   images: [],
-  //   coverBg: '#111',
-  // },
-
-  // /* ── 08 ── */
-  // {
-  //   id: 'terciopelo-negro',
-  //   number: '08',
-  //   category: "Editorial · Harper's Bazaar",
-  //   title: 'Terciopelo negro',
-  //   subtitle: 'La textura como protagonista',
-  //   variant: 'warm',
-  //   wide: false,
-  //   year: '2023',
-  //   client: "Harper's Bazaar España",
-  //   role: 'Estilismo editorial',
-  //   location: 'Sevilla, España',
-  //   description:
-  //     'Editorial conceptual que explora el terciopelo como metáfora de la opulencia sin ostentación. Rodada en los patios de Sevilla, la colisión entre la arquitectura andaluza y las siluetas modernas crea una tensión visual única.',
-  //   credits: [
-  //     { label: 'Fotografía',  value: 'Álvaro Medina' },
-  //     { label: 'Maquillaje',  value: 'Carmela Reyes' },
-  //     { label: 'Modelo',      value: 'Nadia Hernández' },
-  //     { label: 'Producción',  value: 'AN Studio' },
-  //   ],
-  //   tags: ['editorial', 'terciopelo', 'sevilla', 'bazaar'],
-  //   images: [],
-  //   coverBg: '#161410',
-  // },
+    /* ── Modelos internos de la colección ── */
+    modelos3d: [
+      {
+        number: '01',
+        title: 'Blanco y Carmesí',
+        subtitle: 'Blazer doble botonadura + falda maxi ombré',
+        description: 'Conjunto en lino crudo con degradado ombré que tiñe la falda de blanco a carmesí. Blazer con solapas en pico, doble botonadura con botones burdeos y forro en seda tafetán rojo.',
+        accent: '#8a1a1a',
+        images: [ColBlancFoto3, ColBlancFoto5, ColBlancFoto1, ColBlancFoto6, ColBlancFoto2, ColBlancFoto4],
+      },
+      {
+        number: '02',
+        title: 'Top Granate',
+        subtitle: 'Corpiño floral + palazzo granate',
+        description: 'Top corpiño sin mangas con cuello-solapa bordado en motivo floral margarita, combinado con falda palazzo maxi en granate oscuro de vuelo generoso.',
+        accent: '#6b1020',
+        images: [ColGranFoto3, ColGranFoto1, ColGranFoto7, ColGranFoto4, ColGranFoto9, ColGranFoto2, ColGranFoto6, ColGranFoto8, ColGranFoto5],
+      },
+      {
+        number: '03',
+        title: 'Capa Organza',
+        subtitle: 'Transparencia escarlata sobre blanco',
+        description: 'Capa de organza roja semitransparente con caída asimétrica sobre vestido blanco con cinturón escarlata. El contraste entre lo translúcido y lo sólido crea volumen y drama.',
+        accent: '#b02020',
+        images: [ColOrgFoto1, ColOrgFoto2, ColOrgFoto3, ColOrgFoto4],
+      },
+      {
+        number: '04',
+        title: 'Vestido Salvia',
+        subtitle: 'Jacquard vegetal con banda de organza',
+        description: 'Vestido midi en jacquard de estampado vegetal verde salvia. Una banda de organza roja en diagonal desde el hombro, con rosa volumétrica, introduce el acento cromático.',
+        accent: '#4a5e30',
+        images: [ColSalvFoto1, ColSalvFoto2, ColSalvFoto3, ColSalvFoto4],
+      },
+      {
+        number: '05',
+        title: 'Halter Salvia',
+        subtitle: 'Escote drapeado y corte canesú',
+        description: 'Vestido halter en popelín estampado verde salvia con escote drapeado, corte canesú y espalda descubierta. Cierre con cremallera invisible en el centro.',
+        accent: '#3a5228',
+        images: [ColHaltFoto1, ColHaltFoto2, ColHaltFoto3, ColHaltFoto4],
+      },
+      {
+        number: '06',
+        title: 'Novia con Cola',
+        subtitle: 'Vestido de novia en seda satén',
+        description: 'Pieza culminante de la colección. Vestido de novia con tirantes finos, cuerpo estructurado y cola escultural en seda satén blanco. Cremallera invisible en el centro de la espalda.',
+        accent: '#8a8a9a',
+        images: [ColNovFoto1, ColNovFoto2, ColNovFoto3, ColNovFoto4],
+      },
+    ],
+  }, 
+  {
+    id: 'oro-y-narciso',
+    number: '06',
+    category: 'Moda · Colección 2025',
+    title: 'Oro y Narciso',
+    subtitle: 'Plisado geométrico y flores de tela',
+    variant: 'warm',
+    wide: true,
+    year: '2025',
+    client: 'Proyecto propio — AN Studio',
+    role: 'Diseño, confección y dirección creativa',
+    location: 'Madrid, España',
+    description:
+      'Conjunto en algodón dorado compuesto por top halter de cuello vuelto drapeado y falda con banda de plisado geométrico en diamante y globo de vuelo. El tocado, artesanal en muselina de algodón sin teñir, recrea narcisos de gran formato que enmarcan el rostro. La paleta —ocre, crudo y amarillo pistilo— dialoga con el moodboard de inspiración: la nostalgia analógica, la luna llena y los arándanos oscuros como contrapunto cromático.',
+    credits: [
+      { label: 'Diseño y confección', value: 'Aitana Núñez' },
+      { label: 'Tocado',              value: 'Aitana Núñez — muselina de algodón' },
+      { label: 'Material',            value: 'Algodón dorado, muselina cruda' },
+      { label: 'Técnica',             value: 'Plisado geométrico a mano, drapeado, florística textil' },
+      { label: 'Fotografía',          value: 'AN Studio' },
+    ],
+    tags: ['vestido', 'dorado', 'plisado', 'tocado', 'narciso', 'algodón', 'colección 2025'],
+    images: [DoradoFoto4, DoradoFoto2, DoradoFoto5, DoradoFoto6, DoradoFoto7, DoradoFoto8, DoradoFoto1],
+    processImages: [DoradoMoodboard, DoradoFoto3],
+    coverBg: '#1c1406',
+    image: DoradoFoto8,
+  }
 ];
 
 export default PROJECTS;

@@ -1,26 +1,101 @@
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, Navigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
 import PROJECTS from '../data/projects';
 
-const PlaceholderFrame = ({ bg = '#131313', number = '01', tall = false }) => (
-  <div
-    className="project-placeholder"
-    style={{ background: bg, aspectRatio: tall ? '2 / 3' : '16 / 9' }}
-  >
-    <svg width="60" height="90" viewBox="0 0 60 90" fill="none"
-      stroke="rgba(240,236,228,0.08)" strokeWidth="0.6">
-      <ellipse cx="30" cy="16" rx="12" ry="12" />
-      <path d="M10 34 Q10 26 30 26 Q50 26 50 34 L54 86 H6 Z" />
-      <line x1="18" y1="46" x2="6" y2="78" />
-      <line x1="42" y1="46" x2="54" y2="78" />
-    </svg>
-    <span className="project-placeholder__number">{number}</span>
-  </div>
-);
+/* ── BookFlip — todas las imágenes en DOM, solo CSS anima ── */
+const BookFlip = ({ images, title }) => {
+  const [idx, setIdx]   = useState(0);
+  const [anim, setAnim] = useState(null); // null | 'next' | 'prev'
+  const lockRef         = useRef(false);
 
+  useEffect(() => {
+    setIdx(0);
+    setAnim(null);
+    lockRef.current = false;
+  }, [images]);
+
+  if (!images || !images.length) return null;
+
+  const go = (dir) => {
+    if (lockRef.current) return;
+    if (dir === 'next' && idx >= images.length - 1) return;
+    if (dir === 'prev' && idx <= 0) return;
+
+    lockRef.current = true;
+    const nextIdx = dir === 'next' ? idx + 1 : idx - 1;
+
+    // Actualizamos idx inmediatamente — las imágenes ya están en el DOM
+    setIdx(nextIdx);
+    setAnim(dir);
+
+    setTimeout(() => {
+      setAnim(null);
+      lockRef.current = false;
+    }, 650);
+  };
+
+  // Página izquierda = idx-1, página derecha = idx
+  const leftSrc  = idx > 0 ? images[idx - 1] : null;
+  const rightSrc = images[idx];
+
+  return (
+    <div className="book-flip">
+      {/* Precargar todas las imágenes ocultas */}
+      <div style={{ display: 'none' }} aria-hidden="true">
+        {images.map((src, i) => <img key={i} src={src} alt="" />)}
+      </div>
+
+      <div className="book-flip__spine" />
+
+      <div className="book-flip__book">
+
+        {/* Página izquierda */}
+        <div className={`book-flip__page book-flip__page--left${anim === 'prev' ? ' book-flip__page--flipping-prev' : ''}`}>
+          {leftSrc
+            ? <img src={leftSrc} alt="" className="book-flip__img" aria-hidden="true" />
+            : <div className="book-flip__empty" />
+          }
+          <div className="book-flip__page-shadow book-flip__page-shadow--left" />
+        </div>
+
+        {/* Página derecha */}
+        <div className={`book-flip__page book-flip__page--right${anim === 'next' ? ' book-flip__page--flipping-next' : ''}`}>
+          <img
+            src={rightSrc}
+            alt={`${title} — ${idx + 1} de ${images.length}`}
+            className="book-flip__img"
+          />
+          <div className="book-flip__page-shadow book-flip__page-shadow--right" />
+        </div>
+
+      </div>
+
+      {/* Controles */}
+      {images.length > 1 && (
+        <div className="book-flip__controls">
+          <button className="book-flip__btn" onClick={() => go('prev')} disabled={idx === 0} aria-label="Página anterior">←</button>
+          <span className="book-flip__counter">{String(idx + 1).padStart(2, '0')} / {String(images.length).padStart(2, '0')}</span>
+          <div className="book-flip__dots">
+            {images.map((_, i) => (
+              <button key={i} className={`book-flip__dot${i === idx ? ' book-flip__dot--active' : ''}`}
+                onClick={() => { if (i > idx) go('next'); else if (i < idx) go('prev'); }}
+                aria-label={`Imagen ${i + 1}`} />
+            ))}
+          </div>
+          <button className="book-flip__btn" onClick={() => go('next')} disabled={idx === images.length - 1} aria-label="Página siguiente">→</button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ── Página de proyecto ─────────────────────────────────── */
 const ProjectPage = () => {
-  const { id }   = useParams();
-  const navigate = useNavigate();
-  const project  = PROJECTS.find((p) => p.id === id);
+  const { id }  = useParams();
+  const project = PROJECTS.find((p) => p.id === id);
+
+  if (id === '__coleccion3d__') return <Navigate to="/coleccion-3d" replace />;
+  if (id === '__process__')    return <Navigate to="/proceso-clo3d" replace />;
 
   if (!project) {
     return (
@@ -35,8 +110,7 @@ const ProjectPage = () => {
   const prev = PROJECTS[currentIndex - 1] ?? null;
   const next = PROJECTS[currentIndex + 1] ?? null;
 
-  // imágenes extra (índice 4 en adelante)
-  const extraImages = project.images.slice(4);
+  const hasProcess = project.processImages && project.processImages.length > 0;
 
   return (
     <div className="project-page">
@@ -82,51 +156,42 @@ const ProjectPage = () => {
         </div>
       </header>
 
-      {/* ── Cover image ── */}
-      <div className="project-cover">
-        {project.images[0]
-          ? <img src={project.images[0]} alt={`${project.title} — cover`} />
-          : <PlaceholderFrame bg={project.coverBg} number={project.number} />}
-      </div>
-
       {/* ── Body ── */}
       <div className="project-body">
 
-        {/* description */}
+        {/* Descripción */}
         <section className="project-description">
           <p className="project-description__label">Sobre el proyecto</p>
           <p className="project-description__text">{project.description}</p>
         </section>
 
-        {/* 2-up images */}
-        <div className="project-images-2up">
-          {[1, 2].map((i) => (
-            project.images[i]
-              ? <img key={i} src={project.images[i]} alt={`${project.title} ${i + 1}`} />
-              : <PlaceholderFrame key={i} bg={project.coverBg} number={project.number} tall />
-          ))}
+        {/* ── BookFlip: fotos del producto ── */}
+        <div className="project-section">
+          <div className="project-section__header">
+            <span className="project-section__label">Fotografía del producto</span>
+            <span className="project-section__count">{String(project.images.length).padStart(2, '0')} imágenes</span>
+          </div>
+          <BookFlip
+            images={project.images}
+            title={project.title}
+          />
         </div>
 
-        {/* full-width image */}
-        <div className="project-image-full">
-          {project.images[3]
-            ? <img src={project.images[3]} alt={`${project.title} — full`} />
-            : <PlaceholderFrame bg={project.coverBg} number={project.number} />}
-        </div>
-
-        {/* ── Extra images (proceso, concepto, materiales…) ── */}
-        {extraImages.length > 0 && (
-          <div className="project-extra">
-            <p className="project-description__label">Proceso creativo</p>
-            <div className="project-extra__grid">
-              {extraImages.map((src, i) => (
-                <img key={i} src={src} alt={`${project.title} — proceso ${i + 1}`} />
-              ))}
+        {/* ── BookFlip: proceso creativo (solo si hay) ── */}
+        {hasProcess && (
+          <div className="project-section">
+            <div className="project-section__header">
+              <span className="project-section__label">Proceso creativo</span>
+              <span className="project-section__count">{String(project.processImages.length).padStart(2, '0')} imágenes</span>
             </div>
+            <BookFlip
+              images={project.processImages}
+              title={`${project.title} — proceso`}
+            />
           </div>
         )}
 
-        {/* credits */}
+        {/* Créditos */}
         <section className="project-credits">
           <p className="project-credits__label">Créditos</p>
           <ul className="project-credits__list">
@@ -139,7 +204,7 @@ const ProjectPage = () => {
           </ul>
         </section>
 
-        {/* tags */}
+        {/* Tags */}
         <div className="project-tags">
           {project.tags.map((t) => (
             <span key={t} className="project-tag">#{t}</span>
@@ -148,7 +213,7 @@ const ProjectPage = () => {
 
       </div>
 
-      {/* ── Prev / Next navigation ── */}
+      {/* ── Prev / Next ── */}
       <nav className="project-nav">
         <div className="project-nav__side project-nav__side--prev">
           {prev ? (
