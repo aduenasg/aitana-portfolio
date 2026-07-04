@@ -1363,3 +1363,36 @@
 @media (max-width: 500px) {
   .c3d-strip__grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ═══════════════════════════════════════════════════
+   MODO CLARO — project.css overrides
+   ═══════════════════════════════════════════════════ */
+
+[data-theme="light"] .book-flip {
+  background: var(--color-surface);
+}
+[data-theme="light"] .book-flip__page,
+[data-theme="light"] .book-flip__turning-front,
+[data-theme="light"] .book-flip__turning-back {
+  background: var(--color-surface2);
+}
+[data-theme="light"] .book-flip__empty {
+  background: var(--color-surface3);
+}
+
+[data-theme="light"] .project-hero { background: var(--color-surface) !important; }
+[data-theme="light"] .project-section { background: var(--color-surface); }
+[data-theme="light"] .project-not-found { color: var(--color-text-muted); }
+
+/* ─── project.css light overrides actualizados para marrón pastel ─── */
+[data-theme="light"] .project-hero__title,
+[data-theme="light"] .project-hero__subtitle { color: var(--color-text); }
+[data-theme="light"] .project-detail__label  { color: var(--color-text-muted); }
+[data-theme="light"] .project-detail__value  { color: var(--color-text); }
+[data-theme="light"] .project-section__label,
+[data-theme="light"] .project-section__count { color: var(--color-text-muted); }
+[data-theme="light"] .book-flip__counter      { color: rgba(46,31,16,0.45); }
+[data-theme="light"] .book-flip__btn          { border-color: rgba(46,31,16,0.25); color: rgba(46,31,16,0.6); }
+[data-theme="light"] .book-flip__btn:hover:not(:disabled) { border-color: var(--color-gold); color: var(--color-gold); }
+[data-theme="light"] .book-flip__dot          { background: rgba(46,31,16,0.22); }
+[data-theme="light"] .book-flip__dot--active  { background: var(--color-gold); }

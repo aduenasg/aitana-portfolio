@@ -1,54 +1,71 @@
-/**
- * About
- * Props:
- *   aboutImage {string} – optional URL / imported asset for the portrait photo
- */
-const About = ({ aboutImage }) => (
-  <section className="about" id="about">
+import { useEffect, useRef } from 'react';
+import { useLang } from '../context/LangContext';
 
-    {/* ── Image column ── */}
-    <div className="about__image">
-      {aboutImage ? (
-        <img src={aboutImage} alt="Aitana Núñez — studio" />
-      ) : (
-        <svg
-          width="70"
-          height="110"
-          viewBox="0 0 70 110"
-          fill="none"
-          stroke="rgba(240,236,228,0.1)"
-          strokeWidth="0.6"
-        >
-          <ellipse cx="35" cy="22" rx="14" ry="14" />
-          <path d="M12 46 Q12 36 35 36 Q58 36 58 46 L64 104 H6 Z" />
-          <line x1="22" y1="60" x2="8" y2="96" />
-          <line x1="48" y1="60" x2="62" y2="96" />
-        </svg>
-      )}
-      <span className="about__rotated-text">Aitana</span>
+const StatCounter = ({ to, suffix = '', label }) => {
+  const numRef  = useRef(null);
+  const started = useRef(false);
+  useEffect(() => {
+    const el = numRef.current;
+    if (!el) return;
+    started.current = false;
+    el.textContent = '0' + suffix;
+    const io = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting || started.current) return;
+      started.current = true;
+      const duration = 1400;
+      const start = performance.now();
+      const tick = (now) => {
+        const t = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(ease * to) + suffix;
+        if (t < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }, { threshold: 0.5 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [to, suffix]);
+  return (
+    <div className="about__stat">
+      <span className="about__stat-num" ref={numRef}>0{suffix}</span>
+      <span className="about__stat-label">{label}</span>
     </div>
+  );
+};
 
-    {/* ── Text column ── */}
-    <div className="about__content">
-      <p className="about__label">Sobre Aitana</p>
-
-      <blockquote className="about__quote">
-        "La moda no es solo ropa. Es el idioma silencioso con el que le digo al mundo quién soy."
-      </blockquote>
-
-      <p className="about__body">
-        Con más de diez años entre bastidores de la industria, Aitana Núñez ha construido
-        un lenguaje visual propio donde la elegancia nunca es accidental. Ha trabajado con
-        marcas, editoriales y artistas que comparten su obsesión por los detalles.
-      </p>
-
-      <div className="about__actions">
-        <button className="btn">Studio →</button>
-        <button className="btn btn--gold">Descargar press kit</button>
+const About = ({ aboutImage }) => {
+  const { t } = useLang();
+  return (
+    <section className="about" id="about">
+      <div className="about__image">
+        {aboutImage
+          ? <img src={aboutImage} alt="Aitana Núñez — studio" />
+          : <svg width="70" height="110" viewBox="0 0 70 110" fill="none" stroke="rgba(240,236,228,0.1)" strokeWidth="0.6">
+              <ellipse cx="35" cy="22" rx="14" ry="14" />
+              <path d="M12 46 Q12 36 35 36 Q58 36 58 46 L64 104 H6 Z" />
+              <line x1="22" y1="60" x2="8" y2="96" /><line x1="48" y1="60" x2="62" y2="96" />
+            </svg>
+        }
+        <span className="about__rotated-text">Aitana</span>
       </div>
-    </div>
-
-  </section>
-);
+      <div className="about__content">
+        <p className="about__label">{t('about_label')}</p>
+        <blockquote className="about__quote">{t('about_quote')}</blockquote>
+        <p className="about__body">{t('about_body')}</p>
+        <div className="about__stats">
+          <StatCounter to={1} suffix="" label={t('about_stat1_label')} />
+          <StatCounter to={}  suffix=""  label={t('about_stat2_label')} />
+          <StatCounter to={}  suffix=""  label={t('about_stat3_label')} />
+        </div>
+        <div className="about__actions">
+          <button className="btn">{t('about_studio')}</button>
+          <a href="/Portfolio-Aitana-Nunez.pdf" download="Portfolio-2026-Aitana-Nunez.pdf" className="btn btn--gold">
+            {t('about_kit')}
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+};
 
 export default About;

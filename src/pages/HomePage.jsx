@@ -39,8 +39,8 @@ const HomePage = () => {
       <Ticker />
       <div className="reveal reveal--up"><Works /></div>
       <div className="reveal reveal--up" style={{ transitionDelay: '0.1s' }}><About aboutImage={AboutMeImg} /></div>
-      <div className="reveal reveal--up" style={{ transitionDelay: '0.05s' }}><Clients /></div>
-      <div className="reveal reveal--up"><Contact email="hola@aitananunez.com" /></div>
+      {/* <div className="reveal reveal--up" style={{ transitionDelay: '0.05s' }}><Clients /></div> */}
+      <div className="reveal reveal--up"><Contact email="aitananr2@gmail.com" /></div>
       <Footer />
     </>
   );

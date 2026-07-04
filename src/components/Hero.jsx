@@ -1,56 +1,43 @@
-/**
- * Hero
- * Props:
- *   heroImage {string} – optional URL / imported asset for the portrait photo
- */
-const Hero = ({ heroImage }) => (
-  <section className="hero">
+import { useLang } from '../context/LangContext';
 
-    {/* ── Left column ── */}
-    <div className="hero__left">
-      <p className="hero__tag hero-anim hero-anim--1">Estilista · Directora creativa · Madrid</p>
+const Hero = ({ heroImage }) => {
+  const { t } = useLang();
 
-      <h1 className="hero__title">
-        <span className="hero__title--outline hero-word hero-word--1">Fashion</span>
-        <span className="hero-word hero-word--2">is my</span>
-        <span className="hero__title--italic hero-word hero-word--3">language.</span>
-      </h1>
-
-      <div className="hero__bottom hero-anim hero-anim--5">
-        <p className="hero__desc">
-          Colecciones que hablan sin palabras. Más de diez años creando universos
-          visuales donde cada prenda cuenta una historia diferente.
-        </p>
-        <span className="hero__scroll-hint">Scroll</span>
+  return (
+    <section className="hero">
+      <div className="hero__left">
+        <p className="hero__tag hero-anim hero-anim--1">{t('hero_tag')}</p>
+        <h1 className="hero__title">
+          <span className="hero__title--outline hero-word hero-word--1">{t('hero_line1')}</span>
+          <span className="hero-word hero-word--2">{t('hero_line2')}</span>
+          <span className="hero__title--italic hero-word hero-word--3">{t('hero_line3')}</span>
+        </h1>
+        <div className="hero__bottom hero-anim hero-anim--5">
+          <p className="hero__desc">{t('hero_desc')}</p>
+          <span className="hero__scroll-hint">{t('hero_scroll')}</span>
+        </div>
       </div>
-    </div>
 
-    {/* ── Right column ── */}
-    <div className="hero__right hero-anim hero-anim--3">
-      <div className="hero__image-frame">
-        {heroImage ? (
-          <img src={heroImage} alt="Aitana Núñez" />
-        ) : (
-          <svg
-            className="hero__placeholder-svg"
-            width="72"
-            height="108"
-            viewBox="0 0 72 108"
-            fill="none"
-            stroke="white"
-            strokeWidth="0.6"
-          >
-            <ellipse cx="36" cy="20" rx="14" ry="14" />
-            <path d="M14 42 Q14 33 36 33 Q58 33 58 42 L64 102 H8 Z" />
-            <line x1="22" y1="56" x2="8" y2="96" />
-            <line x1="50" y1="56" x2="64" y2="96" />
-          </svg>
-        )}
+      <div className="hero__right hero-anim hero-anim--3">
+        <div className="hero__image-frame">
+          {heroImage && <img src={heroImage} alt="Aitana Núñez" />}
+          <div className="hero__editorial-overlay">
+            <div className="hero__editorial-top">
+              <span className="hero__editorial-tag">{t('hero_editorial_tag')}</span>
+              <span className="hero__editorial-year">SS·26</span>
+            </div>
+            <div className="hero__editorial-bottom">
+              <p className="hero__editorial-name">Aitana Núñez</p>
+              <p className="hero__editorial-role">{t('hero_editorial_role')}</p>
+              <div className="hero__editorial-line" />
+              <p className="hero__editorial-city">{t('hero_editorial_city')}</p>
+            </div>
+          </div>
+        </div>
+        <div className="hero__year">2026</div>
       </div>
-      <div className="hero__year">2026</div>
-    </div>
-
-  </section>
-);
+    </section>
+  );
+};
 
 export default Hero;
