@@ -54,8 +54,8 @@ const About = ({ aboutImage }) => {
         <p className="about__body">{t('about_body')}</p>
         <div className="about__stats">
           <StatCounter to={1} suffix="" label={t('about_stat1_label')} />
-          <StatCounter to={}  suffix=""  label={t('about_stat2_label')} />
-          <StatCounter to={}  suffix=""  label={t('about_stat3_label')} />
+          <StatCounter to={3}  suffix=""  label={t('about_stat2_label')} />
+          <StatCounter to={0}  suffix=""  label={t('about_stat3_label')} />
         </div>
         <div className="about__actions">
           <button className="btn">{t('about_studio')}</button>
