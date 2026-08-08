@@ -1,0 +1,112 @@
+.coverflow {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  background: var(--color-scrim-soft);
+  border-radius: 16px 16px 0 0;
+  perspective: 1200px;
+}
+
+.coverflow__track {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.coverflow__card {
+  position: absolute;
+  width: 190px;
+  aspect-ratio: 3 / 4;
+  cursor: pointer;
+}
+
+.coverflow__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
+  box-shadow: var(--shadow-stage);
+  border: 1px solid var(--color-border-on-image);
+  display: block;
+}
+
+.coverflow__caption {
+  position: absolute;
+  bottom: -30px;
+  left: -20px;
+  right: -20px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-on-image);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Barra de navegación (flechas + puntos), más grande ── */
+.coverflow__controls {
+  margin: 24px 0 0;
+  width: 100%;
+  padding: 5px 24px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  justify-content: space-between;
+  color: var(--color-on-image-muted);
+  border-radius: 0;
+  background: var(--color-scrim-soft);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-control);
+  box-sizing: border-box;
+  z-index: 20;
+}
+
+.coverflow__arrow {
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 999px;
+  border: 0;
+  background: transparent;
+  color: var(--color-on-image-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.coverflow__arrow:hover {
+  background: var(--color-border-on-image);
+  color: var(--color-on-image);
+}
+
+.coverflow__dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+}
+
+.coverflow__dot {
+  border-radius: 999px;
+  cursor: pointer;
+  height: 9px;
+  width: 9px;
+  background: var(--color-border-on-image);
+  transition: all 0.3s ease;
+}
+.coverflow__dot:hover { background: var(--color-on-image-muted); }
+.coverflow__dot--on {
+  width: 30px;
+  background: var(--color-gold);
+}

@@ -1,0 +1,37 @@
+.wave-loader {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  transform: scale(0.6);
+}
+@media (min-width: 640px) { .wave-loader { transform: scale(0.8); } }
+@media (min-width: 768px) { .wave-loader { transform: scale(1); } }
+
+.wave-loader__track {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  height: 192px;
+  gap: 8px;
+  width: 292px;
+}
+
+.wave-loader__bar {
+  width: 12px;
+  border-radius: 999px;
+  transform-origin: bottom;
+}
+
+.wave-loader__ball {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-gold);
+  z-index: 10;
+  box-shadow: var(--shadow-control);
+}

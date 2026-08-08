@@ -1,93 +1,78 @@
+import { useState } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { useState, useEffect, useRef } from 'react';
 import PROJECTS from '../data/projects';
+import Stack from '../components/Stack';
+import CircularGallery from '../components/CircularGallery';
+import Lightbox from '../components/Lightbox';
+import Reveal from '../components/Reveal';
+import ScrollFloat from '../components/ScrollFloat';
+import Navbar from '../components/Navbar';
 
-/* ── BookFlip — todas las imágenes en DOM, solo CSS anima ── */
-const BookFlip = ({ images, title }) => {
-  const [idx, setIdx]   = useState(0);
-  const [anim, setAnim] = useState(null); // null | 'next' | 'prev'
-  const lockRef         = useRef(false);
-
-  useEffect(() => {
-    setIdx(0);
-    setAnim(null);
-    lockRef.current = false;
-  }, [images]);
-
+/* ── Galería de fotos: pila arrastrable (Stack, de React Bits) ── */
+const PhotoStack = ({ images, title }) => {
   if (!images || !images.length) return null;
 
-  const go = (dir) => {
-    if (lockRef.current) return;
-    if (dir === 'next' && idx >= images.length - 1) return;
-    if (dir === 'prev' && idx <= 0) return;
-
-    lockRef.current = true;
-    const nextIdx = dir === 'next' ? idx + 1 : idx - 1;
-
-    // Actualizamos idx inmediatamente — las imágenes ya están en el DOM
-    setIdx(nextIdx);
-    setAnim(dir);
-
-    setTimeout(() => {
-      setAnim(null);
-      lockRef.current = false;
-    }, 650);
-  };
-
-  // Página izquierda = idx-1, página derecha = idx
-  const leftSrc  = idx > 0 ? images[idx - 1] : null;
-  const rightSrc = images[idx];
-
   return (
-    <div className="book-flip">
-      {/* Precargar todas las imágenes ocultas */}
-      <div style={{ display: 'none' }} aria-hidden="true">
-        {images.map((src, i) => <img key={i} src={src} alt="" />)}
-      </div>
-
-      <div className="book-flip__spine" />
-
-      <div className="book-flip__book">
-
-        {/* Página izquierda */}
-        <div className={`book-flip__page book-flip__page--left${anim === 'prev' ? ' book-flip__page--flipping-prev' : ''}`}>
-          {leftSrc
-            ? <img src={leftSrc} alt="" className="book-flip__img" aria-hidden="true" />
-            : <div className="book-flip__empty" />
-          }
-          <div className="book-flip__page-shadow book-flip__page-shadow--left" />
-        </div>
-
-        {/* Página derecha */}
-        <div className={`book-flip__page book-flip__page--right${anim === 'next' ? ' book-flip__page--flipping-next' : ''}`}>
+    <div className="project-stack">
+      <Stack
+        cards={images.map((src, i) => (
           <img
-            src={rightSrc}
-            alt={`${title} — ${idx + 1} de ${images.length}`}
-            className="book-flip__img"
+            key={i}
+            src={src}
+            alt={`${title} — ${i + 1} de ${images.length}`}
+            className="card-image"
           />
-          <div className="book-flip__page-shadow book-flip__page-shadow--right" />
-        </div>
-
-      </div>
-
-      {/* Controles */}
+        ))}
+        randomRotation
+        sendToBackOnClick
+        sensitivity={150}
+      />
       {images.length > 1 && (
-        <div className="book-flip__controls">
-          <button className="book-flip__btn" onClick={() => go('prev')} disabled={idx === 0} aria-label="Página anterior">←</button>
-          <span className="book-flip__counter">{String(idx + 1).padStart(2, '0')} / {String(images.length).padStart(2, '0')}</span>
-          <div className="book-flip__dots">
-            {images.map((_, i) => (
-              <button key={i} className={`book-flip__dot${i === idx ? ' book-flip__dot--active' : ''}`}
-                onClick={() => { if (i > idx) go('next'); else if (i < idx) go('prev'); }}
-                aria-label={`Imagen ${i + 1}`} />
-            ))}
-          </div>
-          <button className="book-flip__btn" onClick={() => go('next')} disabled={idx === images.length - 1} aria-label="Página siguiente">→</button>
-        </div>
+        <p className="project-stack__hint">Arrastra o haz clic para ver la siguiente foto</p>
       )}
     </div>
   );
 };
+
+/* ── Galería de proceso creativo: galería circular 3D (CircularGallery, de React Bits) ──
+   Al hacer clic en un paso, se abre a pantalla completa con navegación. */
+const ProcessCircularGallery = ({ images, title }) => {
+  const [lightboxIndex, setLightboxIndex] = useState(null);
+
+  if (!images || !images.length) return null;
+
+  const items = images.map((src, i) => ({
+    image: src,
+    text: `Paso ${String(i + 1).padStart(2, '0')}`,
+  }));
+
+  return (
+    <div className="project-circular-gallery-wrap">
+      <div className="project-circular-gallery">
+        <CircularGallery
+          items={items}
+          bend={2}
+          textColor="#c9a96e"
+          borderRadius={0.05}
+          font="bold 22px Playfair Display"
+          scrollSpeed={1.6}
+          scrollEase={0.06}
+          onItemClick={setLightboxIndex}
+        />
+      </div>
+      <p className="project-circular-gallery__hint">Arrastra para explorar · haz clic para ver a pantalla completa</p>
+      <Lightbox
+        images={images}
+        index={lightboxIndex}
+        onClose={() => setLightboxIndex(null)}
+        onNavigate={setLightboxIndex}
+        title={title}
+      />
+    </div>
+  );
+};
+
+
 
 /* ── Página de proyecto ─────────────────────────────────── */
 const ProjectPage = () => {
@@ -116,27 +101,18 @@ const ProjectPage = () => {
     <div className="project-page">
 
       {/* ── Navbar ── */}
-      <nav className="navbar">
-        <div className="navbar__brand">
-          <div className="navbar__dot" />
-          <Link to="/" className="navbar__name">Aitana Núñez</Link>
-        </div>
-        <ul className="navbar__links">
-          <li><Link to="/#works">Obras</Link></li>
-          <li><Link to="/#about">Studio</Link></li>
-          <li><Link to="/#contact">Contacto</Link></li>
-        </ul>
-      </nav>
+      <Navbar variant="inner" />
 
       {/* ── Hero banner ── */}
       <header className="project-hero" style={{ '--cover-bg': project.coverBg }}>
-        <div className="project-hero__bg-number" aria-hidden="true">{project.number}</div>
+        {/* Zoom: es un número a sangre, sin desplazamiento lateral. */}
+        <div className="project-hero__bg-number animate-on-scroll reveal-zoom reveal-slow" aria-hidden="true">{project.number}</div>
         <div className="project-hero__content">
-          <p className="project-hero__category">{project.category}</p>
-          <h1 className="project-hero__title">{project.title}</h1>
-          <p className="project-hero__subtitle">{project.subtitle}</p>
+          <Reveal as="p" className="project-hero__category" y={16} duration={0.6}>{project.category}</Reveal>
+          <Reveal as="h1" className="project-hero__title" y={24} delay={0.1} duration={0.7}>{project.title}</Reveal>
+          <Reveal as="p" className="project-hero__subtitle" y={16} delay={0.2} duration={0.6}>{project.subtitle}</Reveal>
         </div>
-        <div className="project-hero__meta">
+        <Reveal as="div" className="project-hero__meta" y={20} delay={0.3}>
           <div className="project-hero__meta-item">
             <span className="project-hero__meta-label">Cliente</span>
             <span className="project-hero__meta-value">{project.client}</span>
@@ -153,46 +129,46 @@ const ProjectPage = () => {
             <span className="project-hero__meta-label">Localización</span>
             <span className="project-hero__meta-value">{project.location}</span>
           </div>
-        </div>
+        </Reveal>
       </header>
 
       {/* ── Body ── */}
       <div className="project-body">
 
         {/* Descripción */}
-        <section className="project-description">
-          <p className="project-description__label">Sobre el proyecto</p>
+        <Reveal as="section" className="project-description">
+          <ScrollFloat as="p" containerClassName="project-description__label" stagger={0.02} animationDuration={0.6}>Sobre el proyecto</ScrollFloat>
           <p className="project-description__text">{project.description}</p>
-        </section>
+        </Reveal>
 
         {/* ── BookFlip: fotos del producto ── */}
-        <div className="project-section">
+        <Reveal as="div" className="project-section">
           <div className="project-section__header">
-            <span className="project-section__label">Fotografía del producto</span>
+            <ScrollFloat as="span" containerClassName="project-section__label" stagger={0.02} animationDuration={0.6}>Fotografía del producto</ScrollFloat>
             <span className="project-section__count">{String(project.images.length).padStart(2, '0')} imágenes</span>
           </div>
-          <BookFlip
+          <PhotoStack
             images={project.images}
             title={project.title}
           />
-        </div>
+        </Reveal>
 
         {/* ── BookFlip: proceso creativo (solo si hay) ── */}
         {hasProcess && (
-          <div className="project-section">
+          <Reveal as="div" className="project-section">
             <div className="project-section__header">
-              <span className="project-section__label">Proceso creativo</span>
+              <ScrollFloat as="span" containerClassName="project-section__label" stagger={0.02} animationDuration={0.6}>Proceso creativo</ScrollFloat>
               <span className="project-section__count">{String(project.processImages.length).padStart(2, '0')} imágenes</span>
             </div>
-            <BookFlip
+            <ProcessCircularGallery
               images={project.processImages}
-              title={`${project.title} — proceso`}
+              title={project.title}
             />
-          </div>
+          </Reveal>
         )}
 
         {/* Créditos */}
-        <section className="project-credits">
+        <Reveal as="section" className="project-credits">
           <p className="project-credits__label">Créditos</p>
           <ul className="project-credits__list">
             {project.credits.map((c) => (
@@ -202,20 +178,20 @@ const ProjectPage = () => {
               </li>
             ))}
           </ul>
-        </section>
+        </Reveal>
 
         {/* Tags */}
-        <div className="project-tags">
+        <Reveal as="div" className="project-tags">
           {project.tags.map((t) => (
             <span key={t} className="project-tag">#{t}</span>
           ))}
-        </div>
+        </Reveal>
 
       </div>
 
       {/* ── Prev / Next ── */}
-      <nav className="project-nav">
-        <div className="project-nav__side project-nav__side--prev">
+      <nav className="project-nav reveal-stagger">
+        <div className="project-nav__side project-nav__side--prev animate-on-scroll reveal-up reveal-near">
           {prev ? (
             <Link to={`/proyecto/${prev.id}`} className="project-nav__link">
               <span className="project-nav__dir">← Anterior</span>
@@ -223,10 +199,10 @@ const ProjectPage = () => {
             </Link>
           ) : <div />}
         </div>
-        <Link to="/" className="project-nav__back">
+        <Link to="/" className="project-nav__back animate-on-scroll reveal-up reveal-near">
           <span>Ver todos los proyectos</span>
         </Link>
-        <div className="project-nav__side project-nav__side--next">
+        <div className="project-nav__side project-nav__side--next animate-on-scroll reveal-up reveal-near">
           {next ? (
             <Link to={`/proyecto/${next.id}`} className="project-nav__link project-nav__link--right">
               <span className="project-nav__dir">Siguiente →</span>
@@ -237,7 +213,7 @@ const ProjectPage = () => {
       </nav>
 
       {/* ── Footer ── */}
-      <footer className="footer">
+      <footer className="footer animate-on-scroll reveal-up reveal-near reveal-fast">
         <span className="footer__copy">© 2026 Aitana Núñez</span>
         <span className="footer__name">AN Studio</span>
         <nav className="footer__social">

@@ -1,5 +1,7 @@
+import Reveal from './Reveal';
+
 const Footer = () => (
-  <footer className="footer">
+  <Reveal as="footer" className="footer" y={16} duration={0.6}>
     <span className="footer__copy">© 2026 Aitana Núñez</span>
     <span className="footer__name">AN Studio</span>
     <nav className="footer__social">
@@ -7,7 +9,7 @@ const Footer = () => (
       <a href="https://linkedin.com"  target="_blank" rel="noopener noreferrer">LI</a>
       <a href="https://behance.net"   target="_blank" rel="noopener noreferrer">BE</a>
     </nav>
-  </footer>
+  </Reveal>
 );
 
 export default Footer;

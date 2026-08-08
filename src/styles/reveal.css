@@ -1,0 +1,149 @@
+/* ═══════════════════════════════════════════════════
+   SISTEMA DE ENTRADA — «la pieza que encaja»
+   ═══════════════════════════════════════════════════
+
+   Un único gesto para todo el sitio: la pieza llega desplazada y
+   apenas reducida, viaja rápido y frena largo hasta asentarse. Sin
+   rebote — el rebote lee como juguete y aquí el registro es editorial.
+
+   Uso:
+     <div class="animate-on-scroll">…</div>
+
+   El motor (src/components/ScrollReveal.jsx) añade `.is-visible` una
+   sola vez, cuando el elemento entra en pantalla.
+
+   ── Por qué el estado oculto cuelga de `.reveal-ready` ──
+   Esa clase la pone el motor en <html> antes del primer pintado. Si el
+   JS no llega a ejecutarse, nada queda invisible: el contenido se ve
+   tal cual, sin animación. Es la red de seguridad del sistema.
+
+   ── Sólo se animan `opacity` y `transform` ──
+   Nunca top/left/width/height: no hay reflow, no hay saltos de layout
+   y el tamaño final del contenedor no cambia en ningún momento.       */
+
+
+:root {
+  /* Duración base. El rango cómodo del sistema es 520–800ms. */
+  --reveal-duration: 700ms;
+
+  /* Retraso propio del elemento (además del escalonado del grupo). */
+  --reveal-delay: 0ms;
+
+  /* Paso entre elementos consecutivos de un mismo grupo. */
+  --reveal-step: 60ms;
+
+  /* Cuánto viaja la pieza hasta su sitio. */
+  --reveal-distance: 34px;
+
+  /* Escala de partida: casi imperceptible, sólo da profundidad. */
+  --reveal-scale: 0.985;
+
+  /* Salida rápida, frenada larga y precisa. La misma curva que ya
+     usan el hero (word-rise) y el subrayado de costura del navbar. */
+  --reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+/* ── Estado oculto ─────────────────────────────────────────────── */
+
+.reveal-ready .animate-on-scroll {
+  opacity: 0;
+  transform:
+    translate3d(
+      var(--reveal-x, 0px),
+      var(--reveal-y, var(--reveal-distance)),
+      0
+    )
+    scale(var(--reveal-scale));
+
+  transition-property: opacity, transform, clip-path;
+  transition-duration: var(--reveal-duration);
+  transition-timing-function: var(--reveal-ease);
+  transition-delay: calc(
+    var(--reveal-delay) + var(--reveal-step) * var(--reveal-index, 0)
+  );
+
+  /* Sólo mientras está oculta. Un will-change permanente crea un
+     bloque contenedor y rompería cualquier sticky/fixed que cuelgue
+     de la pieza (p. ej. .works__stack-item o el propio .navbar). */
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+}
+
+
+/* ── Estado final ──────────────────────────────────────────────── */
+
+.reveal-ready .animate-on-scroll.is-visible {
+  opacity: 1;
+  /* `none` y no `translate3d(0,0,0)`: así no queda ningún transform
+     residual creando bloques contenedores una vez asentada la pieza.
+     La transición desde un translate hasta `none` interpola bien. */
+  transform: none;
+  will-change: auto;
+}
+
+
+/* ── Dirección ─────────────────────────────────────────────────── */
+
+.reveal-up    { --reveal-y: var(--reveal-distance);            --reveal-x: 0px; }
+.reveal-down  { --reveal-y: calc(var(--reveal-distance) * -1); --reveal-x: 0px; }
+.reveal-left  { --reveal-x: calc(var(--reveal-distance) * -1); --reveal-y: 0px; }
+.reveal-right { --reveal-x: var(--reveal-distance);            --reveal-y: 0px; }
+
+/* Sin desplazamiento: sólo profundidad. Para números de fondo y
+   piezas a sangre, donde cualquier viaje lateral daría scroll. */
+.reveal-zoom  { --reveal-x: 0px; --reveal-y: 0px; --reveal-scale: 0.94; }
+
+/* Fundido puro: para divisores y elementos decorativos. */
+.reveal-fade  { --reveal-x: 0px; --reveal-y: 0px; --reveal-scale: 1; }
+
+
+/* ── Distancia ─────────────────────────────────────────────────── */
+
+.reveal-near { --reveal-distance: 16px; }
+.reveal-far  { --reveal-distance: 56px; }
+
+
+/* ── Duración ──────────────────────────────────────────────────── */
+
+.reveal-fast { --reveal-duration: 520ms; }
+.reveal-slow { --reveal-duration: 800ms; }
+
+
+/* ── Retraso propio ────────────────────────────────────────────── */
+
+.reveal-delay-1 { --reveal-delay: 80ms;  }
+.reveal-delay-2 { --reveal-delay: 160ms; }
+.reveal-delay-3 { --reveal-delay: 240ms; }
+.reveal-delay-4 { --reveal-delay: 320ms; }
+
+
+/* ── Escalonado por grupos ─────────────────────────────────────
+   `.reveal-stagger` en un contenedor: el contenedor es el disparador
+   y sus hijos `.animate-on-scroll` entran en secuencia. El motor les
+   estampa `--reveal-index`; `--reveal-step` se hereda desde aquí.
+
+   Pensado para grupos cortos (enlaces, metadatos, créditos, botones).
+   Para rejillas largas es mejor dejar cada pieza con su propio
+   observador: entran solas al llegar el scroll, sin esperas.       */
+
+.reveal-stagger          { --reveal-step: 60ms; }
+.reveal-stagger--tight   { --reveal-step: 40ms; }
+.reveal-stagger--wide    { --reveal-step: 90ms; }
+
+
+/* ── Accesibilidad ─────────────────────────────────────────────
+   Con `reduce` el motor ni siquiera pone `.reveal-ready`, así que
+   este bloque es la segunda red: si la preferencia cambia a mitad de
+   sesión, todo queda visible y quieto al instante.                 */
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-ready .animate-on-scroll,
+  .reveal-ready .animate-on-scroll.is-visible {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+    transition: none !important;
+    will-change: auto !important;
+  }
+}

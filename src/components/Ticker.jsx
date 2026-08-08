@@ -1,18 +1,22 @@
-const ITEMS = [
-  'Styling',
-  'Creative Direction',
-  'Editorial Fashion',
-  'Lookbook',
-  'Art Direction',
-  'Campaign',
-];
+import { useLang } from '../context/LangContext';
+
+/* Reserva por si un idioma no trae la lista: mejor una cinta en
+   español que una cinta vacía. */
+const FALLBACK = ['Estilismo', 'Dirección creativa', 'Moda editorial', 'Lookbook', 'Dirección de arte', 'Campaña'];
 
 const Ticker = () => {
-  // Duplicate items so the animation loops seamlessly
-  const doubled = [...ITEMS, ...ITEMS];
+  const { t } = useLang();
+  const items = t('ticker_items');
+  const list = Array.isArray(items) ? items : FALLBACK;
+
+  // Duplicada, la cinta encadena sin salto: la animación recorre el
+  // 50% del ancho y vuelve al origen sobre contenido idéntico.
+  const doubled = [...list, ...list];
 
   return (
-    <div className="ticker">
+    /* aria-hidden: es una cinta decorativa que repite el contenido, y
+       leída por un lector de pantalla sale duplicada y sin contexto. */
+    <div className="ticker" aria-hidden="true">
       <div className="ticker__track">
         {doubled.map((item, i) => (
           <span key={i} className="ticker__item">

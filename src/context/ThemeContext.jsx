@@ -12,7 +12,14 @@ export const ThemeProvider = ({ children }) => {
     try { localStorage.setItem('theme', theme); } catch {}
   }, [theme]);
 
-  const toggle = () => setTheme(t => t === 'dark' ? 'light' : 'dark');
+  // Activa el fundido de colores solo mientras dura el intercambio, para no
+  // dejar transiciones permanentes sobre todo el árbol.
+  const toggle = () => {
+    const root = document.documentElement;
+    root.classList.add('theme-transition');
+    window.setTimeout(() => root.classList.remove('theme-transition'), 460);
+    setTheme(t => t === 'dark' ? 'light' : 'dark');
+  };
 
   return (
     <ThemeContext.Provider value={{ theme, toggle }}>

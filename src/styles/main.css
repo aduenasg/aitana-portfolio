@@ -1,227 +1,723 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@200;300;400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,900;1,400;1,500;1,700&family=Inter:wght@300;400;500;600&display=swap');
 
-/* ─── Reset & Variables ─── */
+/* ─── Reset ─── */
+/* Sin transición en el selector universal: aplicarla a cada nodo del
+   árbol cuesta en cada repintado y arrastra los hover. El fundido al
+   cambiar de tema lo cubre .theme-transition, que ThemeContext pone y
+   quita sólo durante el intercambio. */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  /* Transición de colores al cambiar tema */
-  transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   TOKENS — "El taller"
+   ───────────────────────────────────────────────────────────────
+   Todo el sistema visual sale de aquí. Regla: ningún componente
+   escribe un color, una medida ni una duración a mano; consume el
+   token. Así el modo claro funciona solo, sin parches por selector.
+
+   El motivo que hila el sitio es el instrumental de patronaje: la
+   marca de registro y el hilván (la puntada larga y discontinua que
+   sujeta la pieza antes de coserla en firme). El cursor ya lo usaba;
+   --rule-baste lo convierte en la divisoria de todo el sitio.
+   ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  --color-bg:           #0a0a0a;
-  --color-surface:      #131313;
-  --color-surface2:     #161410;
-  --color-surface3:     #0e1014;
-  --color-text:         #f0ece4;
-  --color-text-muted:   rgba(240, 236, 228, 0.45);
-  --color-text-dim:     rgba(240, 236, 228, 0.25);
-  --color-text-ghost:   rgba(240, 236, 228, 0.04);
-  --color-gold:         #c9a96e;
-  --color-gold-dim:     rgba(201, 169, 110, 0.4);
-  --color-gold-bg:      rgba(201, 169, 110, 0.06);
-  --color-border:       rgba(240, 236, 228, 0.08);
-  --color-border-soft:  rgba(240, 236, 228, 0.06);
-  --color-overlay:      rgba(10, 10, 10, 0.82);
-  --font-display:       'Playfair Display', serif;
-  --font-body:          'Inter', sans-serif;
+  /* ── Primitivas ──────────────────────────────────────────────
+     Tinta y hueso. No se usan directamente en los componentes:
+     se asignan abajo a un token semántico. */
+  --ink-950:  #08080a;
+  --ink-900:  #0b0b0c;
+  --ink-850:  #111113;
+  --ink-800:  #17171a;
+  --ink-700:  #1f1f23;
+
+  --bone-50:  #faf7f1;
+  --bone-100: #ede7dc;
+  --bone-300: #c4bdb1;
+  --bone-500: #a9a296;
+  --bone-600: #8a8378;
+  --bone-700: #5e594f;
+
+  /* Rampa de oro. El 400 es el dorado de marca ya establecido; los
+     tonos oscuros existen para que el modo claro tenga contraste. */
+  --gold-200: #e4d2a9;
+  --gold-300: #d9be87;
+  --gold-400: #c9a96e;
+  --gold-500: #a9884e;
+  --gold-600: #8a6224;
+  --gold-700: #6e4e1b;
+  --gold-800: #4a340f;
+
+  /* ── Semánticas: modo oscuro (por defecto) ───────────────────
+     Los ratios anotados son contra --color-bg. El mínimo para
+     texto normal es 4.5:1 (WCAG AA); ningún token de texto baja
+     de ahí salvo -ghost, que es puramente decorativo. */
+  --color-bg:            var(--ink-900);
+  --color-surface:       var(--ink-850);
+  --color-surface-2:     var(--ink-800);
+  --color-surface-3:     var(--ink-700);
+
+  --color-text:          var(--bone-100);   /* ~16:1  */
+  --color-text-muted:    var(--bone-500);   /* ~7.8:1 */
+  --color-text-subtle:   var(--bone-600);   /* ~5.2:1 */
+  --color-text-ghost:    rgba(237, 231, 220, 0.05);  /* decorativo */
+
+  --color-gold:          var(--gold-400);   /* ~8.7:1 */
+  --color-gold-dim:      rgba(201, 169, 110, 0.42);
+  --color-gold-bg:       rgba(201, 169, 110, 0.08);
+  --color-on-gold:       var(--ink-900);
+
+  --color-border:        rgba(237, 231, 220, 0.12);
+  --color-border-soft:   rgba(237, 231, 220, 0.07);
+  --color-border-strong: rgba(237, 231, 220, 0.24);
+
+  --color-overlay:       rgba(11, 11, 12, 0.86);
+  --color-focus:         var(--gold-300);
+
+  /* Sombras. Sobre tinta apenas se ven y sirven de peso; sobre hueso
+     hay que bajarlas o ensucian el fondo. Es la única propiedad que
+     de verdad cambia de naturaleza entre temas. */
+  --shadow-card:  0 30px 60px rgba(0, 0, 0, 0.38);
+
+  /* Texto y velos SOBRE fotografía. No cambian con el tema: una
+     prenda fotografiada se lee igual de día que de noche, y esto
+     ahorra media docena de overrides de modo claro. */
+  --color-on-image:        #f6f2ea;
+  --color-on-image-muted:  rgba(246, 242, 234, 0.74);
+  --color-border-on-image: rgba(246, 242, 234, 0.3);
+  /* Tipografía fantasma sobre foto: números de portada, texto rotado */
+  --color-ghost-on-image:  rgba(246, 242, 234, 0.12);
+  --color-scrim:           rgba(8, 7, 6, 0.82);
+  --color-scrim-soft:      rgba(8, 7, 6, 0.45);
+
+  /* Escenario fotográfico opaco (coverflow, carrusel, pila de fotos).
+     Oscuro en los dos temas, igual que el visor: si la foto no llena
+     el hueco, lo que asoma tiene que seguir leyéndose como estudio. */
+  --color-stage:   #0b0b0c;
+  --shadow-stage:  0 24px 50px rgba(0, 0, 0, 0.55);
+  --shadow-control: 0 4px 12px rgba(0, 0, 0, 0.25);
+
+  /* ── Alias heredados ─────────────────────────────────────────
+     Los mantengo porque los consumen ~3.300 líneas de CSS ya
+     escritas. -dim apuntaba a un alfa 0.25 (≈2:1, ilegible);
+     ahora resuelve a -subtle, así que cada uso de los que quedan
+     hereda contraste legal sin tocarlo uno a uno. */
+  --color-surface2:      var(--color-surface-2);
+  --color-surface3:      var(--color-surface-3);
+  --color-text-dim:      var(--color-text-subtle);
+
+  /* ── Tipografía ──────────────────────────────────────────────
+     Playfair pone la voz; Inter, la lectura. Sin tercera familia:
+     los datos técnicos se resuelven con Inter + tabular-nums. */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Escala fluida. El suelo son 11px y se reserva para micro-meta;
+     ningún texto de lectura baja de 16px. */
+  --text-2xs:  0.6875rem;
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-md:   clamp(1.0625rem, 0.35vw + 0.98rem, 1.1875rem);
+  --text-lg:   clamp(1.25rem,   1vw    + 1rem,    1.625rem);
+  --text-xl:   clamp(1.625rem,  2.4vw  + 1rem,    2.375rem);
+  --text-2xl:  clamp(2.125rem,  4vw    + 1rem,    3.5rem);
+  --text-3xl:  clamp(2.75rem,   7vw    + 0.5rem,  5.75rem);
+  --text-4xl:  clamp(4rem,      13vw,             10.5rem);
+
+  --leading-none:  0.92;
+  --leading-tight: 1.15;
+  --leading-snug:  1.35;
+  --leading-body:  1.7;
+
+  --tracking-eyebrow: 0.28em;
+  --tracking-label:   0.16em;
+  --tracking-wide:    0.06em;
+  --tracking-tight:   -0.02em;
+
+  /* ── Espaciado: base 8, holgado ──────────────────────────────
+     Un portfolio de moda vive del aire alrededor de la imagen. */
+  --space-3xs: 4px;
+  --space-2xs: 8px;
+  --space-xs:  12px;
+  --space-sm:  16px;
+  --space-md:  24px;
+  --space-lg:  32px;
+  --space-xl:  48px;
+  --space-2xl: 64px;
+  --space-3xl: 96px;
+  --space-4xl: 128px;
+
+  /* Ritmo vertical entre secciones y márgenes laterales del sitio */
+  --space-section: clamp(64px, 9vw, 128px);
+  --space-gutter:  clamp(20px, 4.5vw, 56px);
+
+  --max-content: 1440px;
+
+  /* ── Radios ──────────────────────────────────────────────────
+     Casi todo a canto vivo: la sastrería es recta. El radio grande
+     existe sólo para las tarjetas apiladas de Works. */
+  --radius-xs:   2px;
+  --radius-lg:   20px;
+  --radius-full: 999px;
+
+  /* ── Motion ──────────────────────────────────────────────────
+     Nada de UI por encima de 400ms. Las duraciones largas que quedan
+     (zoom del hero, ticker) son ambientales y viven en sus @keyframes,
+     no aquí. */
+  --dur-fast:   150ms;
+  --dur-base:   250ms;
+  --dur-slow:   400ms;
+
+  --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft:  cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-inout: cubic-bezier(0.76, 0, 0.24, 1);
+
+  /* ── Firma: el hilván ────────────────────────────────────────
+     Sustituye a los `0.5px solid` de todo el sitio. Se aplica como
+     background-image sobre un pseudo o una caja de 1px de alto. */
+  --baste-dash: 4px;
+  --baste-gap:  6px;
+  --rule-baste: repeating-linear-gradient(
+                  to right,
+                  var(--color-border-strong) 0 var(--baste-dash),
+                  transparent var(--baste-dash)
+                    calc(var(--baste-dash) + var(--baste-gap)));
+  --rule-baste-v: repeating-linear-gradient(
+                  to bottom,
+                  var(--color-border-strong) 0 var(--baste-dash),
+                  transparent var(--baste-dash)
+                    calc(var(--baste-dash) + var(--baste-gap)));
+
+  /* ── Scrollbar ── */
+  --color-scrollbar-track:       transparent;
+  --color-scrollbar-thumb:       rgba(201, 169, 110, 0.35);
+  --color-scrollbar-thumb-hover: rgba(201, 169, 110, 0.6);
 }
 
-/* ─── Modo claro ─── */
+/* ─── Modo claro: hueso ─────────────────────────────────────────
+   Fondo crudo, casi papel de patrón, y tinta marrón muy oscura. El
+   hueso se retira y deja hablar al color de la prenda; el marrón
+   pastel anterior competía con la fotografía y arrastraba todo el
+   texto por debajo del mínimo de contraste.
+
+   Sólo se reasignan las semánticas: las primitivas de tinta y hueso
+   y todo el sistema de medidas, motion y tipografía son comunes. */
 [data-theme="light"] {
-  /* Fondos: marrón pastel cálido, capas diferenciadas */
-  --color-bg:           #c8a882;
-  --color-surface:      #bf9e78;
-  --color-surface2:     #b6946e;
-  --color-surface3:     #ad8b65;
+  --color-bg:            #f2ede4;
+  --color-surface:       #eae3d7;
+  --color-surface-2:     #e1d9cb;
+  --color-surface-3:     #d7cdbc;
 
-  /* Texto: marrón muy oscuro, contraste fuerte sobre pastel */
-  --color-text:         #2e1f10;
-  --color-text-muted:   rgba(46, 31, 16, 0.65);
-  --color-text-dim:     rgba(46, 31, 16, 0.40);
-  --color-text-ghost:   rgba(46, 31, 16, 0.06);
+  --color-text:          #1c1710;   /* ~15:1  */
+  --color-text-muted:    #5c5346;   /* ~6.4:1 */
+  --color-text-subtle:   #6e6558;   /* ~4.9:1 */
+  --color-text-ghost:    rgba(28, 23, 16, 0.07);
 
-  /* Dorado: más oscuro y rico para contrastar con el fondo cálido */
-  --color-gold:         #7a4e1a;
-  --color-gold-dim:     rgba(122, 78, 26, 0.45);
-  --color-gold-bg:      rgba(122, 78, 26, 0.12);
+  /* El oro se oscurece: el de marca (#c9a96e) sobre hueso da ~1.9:1
+     y sería ilegible. El 600 llega a 4.6:1; si algún rótulo pequeño
+     se queda corto, --gold-700 (6.4:1) está en la rampa. */
+  --color-gold:          var(--gold-600);
+  --color-gold-dim:      rgba(138, 98, 36, 0.45);
+  --color-gold-bg:       rgba(138, 98, 36, 0.10);
+  --color-on-gold:       #f7f3eb;
 
-  /* Bordes: visibles pero armoniosos */
-  --color-border:       rgba(46, 31, 16, 0.20);
-  --color-border-soft:  rgba(46, 31, 16, 0.13);
+  --color-border:        rgba(28, 23, 16, 0.16);
+  --color-border-soft:   rgba(28, 23, 16, 0.09);
+  --color-border-strong: rgba(28, 23, 16, 0.28);
 
-  --color-overlay:      rgba(200, 168, 130, 0.92);
+  --color-overlay:       rgba(242, 237, 228, 0.92);
+  --color-focus:         var(--gold-700);
+
+  --shadow-card:  0 24px 48px rgba(28, 23, 16, 0.16);
+
+  /* --color-on-image, --color-scrim y las duraciones no se tocan:
+     el texto sobre fotografía se lee claro en los dos temas. */
+
+  --color-scrollbar-thumb:       rgba(138, 98, 36, 0.4);
+  --color-scrollbar-thumb-hover: rgba(138, 98, 36, 0.65);
 }
 
 html {
   scroll-behavior: smooth;
   /* Transición suave al cambiar de tema */
-  transition: background-color 0.4s ease, color 0.4s ease;
+  transition: background-color var(--dur-slow) ease, color var(--dur-slow) ease;
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar-track);
+}
+
+/* ─── Scrollbar personalizada (Chrome, Edge, Safari) ─── */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-scrollbar-track);
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-scrollbar-thumb);
+  border-radius: 8px;
+  border: 2px solid var(--color-bg);
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-scrollbar-thumb-hover);
 }
 
 body {
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-body);
-  font-weight: 300;
+  /* 400, no 300. El peso fino se veía elegante en maqueta y se
+     deshacía en pantalla real, sobre todo en claro y en móvil.
+     La ligereza la da ahora el espaciado, no el trazo. */
+  font-weight: 400;
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Números en columna (créditos, años, fichas técnicas): sin tercera
+   familia tipográfica, la ficha de taller la da Inter con cifras de
+   ancho fijo. */
+.u-tabular { font-variant-numeric: tabular-nums; }
+
+/* ─── Foco visible ───────────────────────────────────────────────
+   El cursor nativo está oculto en desktop, así que sin esto navegar
+   con teclado es a ciegas. Se aplica a todo lo enfocable de una vez
+   en lugar de componente a componente. */
+:where(a, button, summary, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+  border-radius: var(--radius-xs);
+}
+
+/* Salto al contenido: primer tabulador de la página. Fuera de
+   pantalla hasta que recibe foco. */
+.skip-link {
+  position: absolute;
+  left: var(--space-sm);
+  top: var(--space-sm);
+  z-index: 10001;
+  padding: var(--space-xs) var(--space-md);
+  background: var(--color-bg);
+  border: 1px solid var(--color-gold);
+  color: var(--color-gold);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  transform: translateY(-200%);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.skip-link:focus-visible { transform: translateY(0); }
+
+/* ─── Hilván: la divisoria del sistema ───────────────────────────
+   Reemplaza a los `0.5px solid`. Como <hr> o como pseudo. */
+.rule-baste {
+  height: 1px;
+  border: 0;
+  background-image: var(--rule-baste);
+}
+
+/* Overlay de carga a pantalla completa */
+.page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ─── Pantalla de entrada (loader) ─── */
+.page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+.page-loader__label {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--color-gold);
 }
 
 a { color: inherit; text-decoration: none; }
 button { cursor: pointer; font-family: var(--font-body); }
 
-/* ─── Shared Button ─── */
+/* ─── Botón compartido ───────────────────────────────────────────
+   Antes: 9px, peso 300 y 14px de alto útil. Ahora cumple el mínimo
+   táctil de 44px y el texto se lee. Sigue siendo un botón de canto
+   vivo y fondo transparente: la sastrería es recta. */
 .btn {
-  display: inline-block;
-  padding: 14px 36px;
-  border: 0.5px solid rgba(240, 236, 228, 0.3);
-  font-size: 9px;
-  letter-spacing: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: var(--space-xs) var(--space-xl);
+  border: 1px solid var(--color-border-strong);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--color-text);
   background: transparent;
-  font-weight: 300;
-  transition: background 0.25s;
-  font-family: var(--font-body);
+  transition: background var(--dur-base) var(--ease-out),
+              border-color var(--dur-base) var(--ease-out),
+              color var(--dur-base) var(--ease-out);
 }
-.btn:hover { background: rgba(240, 236, 228, 0.06); }
-
-.btn--gold {
-  border-color: var(--color-gold-dim);
+.btn:hover {
+  background: var(--color-gold-bg);
+  border-color: var(--color-gold);
   color: var(--color-gold);
 }
-.btn--gold:hover { background: var(--color-gold-bg); }
 
-/* ─── Navbar ─── */
+/* Variante llena: la acción principal de cada sección */
+.btn--gold {
+  border-color: var(--color-gold);
+  background: var(--color-gold);
+  color: var(--color-on-gold);
+}
+.btn--gold:hover {
+  background: transparent;
+  color: var(--color-gold);
+}
+
+/* ─── Navbar ─────────────────────────────────────────────────────
+   Tres columnas: marca, secciones, controles. El borde inferior es
+   hilván, no línea continua. */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px 40px;
-  border-bottom: 0.5px solid var(--color-border);
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-gutter);
   position: sticky;
   top: 0;
   z-index: 100;
   background: var(--color-bg);
+  transition: box-shadow var(--dur-slow) var(--ease-out);
 }
+/* El hilván como pseudo: un borde no admite background-image. */
+.navbar::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 1px;
+  background-image: var(--rule-baste);
+  opacity: 0.7;
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+.navbar--scrolled::after { opacity: 1; }
+
 .navbar__brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2xs);
 }
 .navbar__dot {
   width: 6px;
   height: 6px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   background: var(--color-gold);
   flex-shrink: 0;
 }
 .navbar__name {
   font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 400;
-  letter-spacing: 3px;
+  font-size: var(--text-base);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
+  white-space: nowrap;
 }
 .navbar__links {
   display: flex;
-  gap: 36px;
+  gap: var(--space-lg);
   list-style: none;
 }
 .navbar__links a {
-  font-size: 10px;
-  letter-spacing: 2.5px;
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: var(--color-text-dim);
-  font-weight: 300;
-  transition: color 0.25s;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  transition: color var(--dur-base) var(--ease-out);
 }
 .navbar__links a:hover { color: var(--color-text); }
 
-/* ─── Theme toggle ─── */
 .navbar__controls {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-2xs);
 }
 
-/* Selector de idioma */
+/* ─── Selector de idioma ───────────────────────────────────────── */
 .lang-switcher {
   display: flex;
-  gap: 2px;
   align-items: center;
 }
-
 .lang-switcher__btn {
+  /* 44px de alto real; el texto queda ópticamente pequeño pero el
+     área de toque cumple. */
+  min-height: 44px;
+  min-width: 32px;
+  padding: 0 var(--space-2xs);
   background: transparent;
   border: none;
-  color: var(--color-text-dim);
+  color: var(--color-text-subtle);
   font-family: var(--font-body);
-  font-size: 9px;
-  font-weight: 300;
-  letter-spacing: 1.5px;
-  padding: 4px 6px;
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wide);
   cursor: pointer;
-  transition: color 0.2s ease;
   position: relative;
+  transition: color var(--dur-fast) var(--ease-out);
 }
 .lang-switcher__btn::after {
   content: '';
   position: absolute;
-  bottom: 0; left: 6px; right: 6px;
+  bottom: 10px; left: 6px; right: 6px;
   height: 1px;
   background: var(--color-gold);
   transform: scaleX(0);
-  transition: transform 0.25s ease;
+  transition: transform var(--dur-base) var(--ease-out);
 }
-.lang-switcher__btn:hover { color: var(--color-text-muted); }
-.lang-switcher__btn--active {
-  color: var(--color-gold);
-}
+.lang-switcher__btn:hover { color: var(--color-text); }
+.lang-switcher__btn--active { color: var(--color-gold); }
 .lang-switcher__btn--active::after { transform: scaleX(1); }
- 
+
+/* ─── Toggle de tema ─────────────────────────────────────────────
+   No tenía regla base: se renderizaba como <button> del navegador. */
+.navbar__theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  color: var(--color-text-muted);
+  transition: border-color var(--dur-base) var(--ease-out),
+              color var(--dur-base) var(--ease-out),
+              background var(--dur-base) var(--ease-out);
+}
 .navbar__theme-toggle:hover {
   border-color: var(--color-gold-dim);
   color: var(--color-gold);
   background: var(--color-gold-bg);
 }
 .navbar__theme-toggle svg {
-  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform var(--dur-slow) cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .navbar__theme-toggle:hover svg {
   transform: rotate(20deg) scale(1.1);
 }
 
-/* ─── Hero ─── */
-.hero {
-  display: grid;
-  grid-template-columns: 1fr 420px;
-  min-height: 600px;
-  border-bottom: 0.5px solid var(--color-border);
-  padding: 0 40px;
+/* ─── Disparador del menú móvil ──────────────────────────────────
+   Dos puntadas de hilván que giran a aspa al abrir: el mismo gesto
+   de "marcar → cortar" que hace el cursor sobre lo pulsable. */
+.navbar__menu-toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
 }
-.hero__left {
-  padding: 60px 50px 60px 0;
+.navbar__menu-baste {
+  display: block;
+  width: 18px;
+  height: 1px;
+  background-image: var(--rule-baste);
+  /* El hilván se dibuja con --color-border-strong; aquí interesa
+     que se lea como trazo, no como borde. */
+  filter: none;
+  transition: transform var(--dur-slow) var(--ease-soft),
+              opacity var(--dur-fast) var(--ease-out);
+}
+.navbar__menu-toggle--open .navbar__menu-baste:first-child {
+  transform: translateY(3.5px) rotate(45deg);
+}
+.navbar__menu-toggle--open .navbar__menu-baste:last-child {
+  transform: translateY(-3.5px) rotate(-45deg);
+}
+.navbar__menu-toggle:hover { border-color: var(--color-gold-dim); }
+
+/* ─── Panel de navegación móvil ──────────────────────────────────
+   Ocupa la pantalla bajo el navbar. Los enlaces entran escalonados
+   como piezas que se van colocando. */
+.nav-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border-right: 0.5px solid var(--color-border);
+  padding: calc(var(--space-4xl) + var(--space-md)) var(--space-gutter) var(--space-2xl);
+  background: var(--color-bg);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity var(--dur-base) var(--ease-out),
+              transform var(--dur-base) var(--ease-out),
+              visibility 0s linear var(--dur-base);
+}
+/* Cerrado, `visibility: hidden` ya lo saca del orden de tabulación y
+   del árbol de accesibilidad, así que no hace falta [hidden] — y con
+   `display: none` la transición de entrada no llegaba a dispararse:
+   el panel aparecía de golpe. */
+.nav-panel--open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition-delay: 0s;
+}
+
+.nav-panel__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+/* Hilván bajo cada enlace. Con pseudo y no con `border-image`: un
+   degradado no tiene tamaño intrínseco y el recorte del border-image
+   se comporta de forma distinta según el navegador. */
+.nav-panel__item {
+  position: relative;
+  opacity: 0;
+  transform: translateY(12px);
+}
+.nav-panel__item::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 1px;
+  background-image: var(--rule-baste);
+}
+.nav-panel--open .nav-panel__item {
+  animation: nav-item-in var(--dur-slow) var(--ease-out) forwards;
+  /* --i lo inyecta el componente: cada pieza entra tras la anterior */
+  animation-delay: calc(60ms * var(--i));
+}
+@keyframes nav-item-in {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.nav-panel__link {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  min-height: 44px;
+}
+.nav-panel__index {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-label);
+  color: var(--color-gold);
+  flex-shrink: 0;
+}
+.nav-panel__label {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 400;
+  font-style: italic;
+  line-height: var(--leading-tight);
+  color: var(--color-text);
+}
+
+.nav-panel__foot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.nav-panel__email {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-style: italic;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-muted);
+}
+
+/* Por debajo de 768px las secciones dejan el navbar y pasan al panel */
+@media (max-width: 768px) {
+  .navbar__links        { display: none; }
+  .lang-switcher--desktop { display: none; }
+  .navbar__menu-toggle  { display: flex; }
+}
+
+/* El navbar, el selector de idioma y el toggle de tema se definen
+   arriba, junto al panel móvil. Aquí había una segunda copia de todo
+   ese bloque que, por ir después, ganaba a la nueva. */
+
+/* ─── Hero ────────────────────────────────────────────────────────
+   Dos columnas separadas por hilván vertical: a la izquierda el
+   titular, a la derecha la fotografía enmarcada. La proporción de la
+   columna derecha es relativa, no 420px fijos, para que la imagen no
+   se estrangule entre 1024 y 1440. */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr minmax(320px, 32%);
+  min-height: min(80vh, 720px);
+  padding: 0 var(--space-gutter);
+  position: relative;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 1px;
+  background-image: var(--rule-baste);
+}
+.hero__left {
+  padding: var(--space-2xl) var(--space-xl) var(--space-2xl) 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+/* Hilván vertical entre columnas: el mismo motivo, girado */
+.hero__left::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; right: 0;
+  width: 1px;
+  background-image: var(--rule-baste-v);
 }
 .hero__tag {
-  font-size: 9px;
-  letter-spacing: 5px;
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
   color: var(--color-gold);
-  font-weight: 300;
+  font-weight: 500;
 }
 .hero__title {
   font-family: var(--font-display);
-  font-size: 88px;
-  line-height: 0.92;
+  font-size: var(--text-3xl);
+  line-height: var(--leading-none);
+  letter-spacing: var(--tracking-tight);
   font-weight: 900;
-  margin: 28px 0;
+  margin: var(--space-lg) 0;
   color: var(--color-text);
 }
 .hero__title--outline {
@@ -255,9 +751,14 @@ button { cursor: pointer; font-family: var(--font-body); }
 /* Técnica: envolvemos el contenido con un pseudo que anima */
 /* En su lugar animamos el span directamente con translateY + clip */
 .hero-word {
-  animation: word-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
   /* clip-path revela de abajo a arriba */
   clip-path: inset(0 0 100% 0);
+}
+
+/* Espera a que se retire el loader: si no, la secuencia se consume
+   detrás del telón de carga y no llega a verse. */
+body.site-loaded .hero-word {
+  animation: word-rise 0.9s var(--ease-out) both;
 }
 
 .hero-word--1 { animation-delay: 0.15s; }
@@ -278,32 +779,35 @@ button { cursor: pointer; font-family: var(--font-body); }
 .hero__bottom {
   display: flex;
   align-items: flex-end;
-  gap: 40px;
+  gap: var(--space-xl);
 }
 .hero__desc {
-  font-size: 12px;
-  font-weight: 200;
-  line-height: 1.9;
+  /* Medida de lectura: ~45 caracteres. Antes eran 340px con cuerpo de
+     12px, que daba una columna demasiado estrecha y muy alta. */
+  font-size: var(--text-base);
+  font-weight: 400;
+  line-height: var(--leading-body);
   color: var(--color-text-muted);
-  max-width: 340px;
+  max-width: 34ch;
 }
 .hero__scroll-hint {
-  font-size: 9px;
-  letter-spacing: 3px;
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: rgba(240, 236, 228, 0.3);
+  color: var(--color-text-subtle);
   white-space: nowrap;
   writing-mode: vertical-rl;
 }
 .hero__right {
   display: flex;
   flex-direction: column;
-  padding: 40px 0 40px 50px;
+  padding: var(--space-xl) 0 var(--space-xl) var(--space-xl);
 }
 .hero__image-frame {
   flex: 1;
-  background: #1a1a1a;
-  border: 0.5px solid rgba(240, 236, 228, 0.1);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -318,98 +822,139 @@ button { cursor: pointer; font-family: var(--font-body); }
   position: absolute;
   inset: 0;
 }
-.hero__placeholder-svg {
-  opacity: 0.12;
-}
-.hero__image-label {
-  position: absolute;
-  bottom: 16px;
-  left: 16px;
-  font-size: 9px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: rgba(240, 236, 228, 0.25);
-}
 .hero__image-tag {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  font-size: 9px;
-  letter-spacing: 2px;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: var(--color-gold);
-  border: 0.5px solid var(--color-gold-dim);
-  padding: 4px 10px;
+  color: var(--gold-300);
+  border: 1px solid var(--color-border-on-image);
+  padding: var(--space-3xs) var(--space-2xs);
 }
 .hero__year {
   font-family: var(--font-display);
-  font-size: 120px;
+  font-size: var(--text-4xl);
   font-weight: 900;
   color: var(--color-text-ghost);
   line-height: 1;
   text-align: right;
+  font-variant-numeric: tabular-nums;
   margin-top: auto;
   user-select: none;
 }
 
-/* ─── Ticker ─── */
+/* ─── Ticker ──────────────────────────────────────────────────────
+   Cinta de disciplinas. Va entre dos hilvanes, como una tira de tela
+   sujeta por arriba y por abajo. */
 .ticker {
   overflow: hidden;
-  border-top: 0.5px solid var(--color-border);
-  border-bottom: 0.5px solid var(--color-border);
-  padding: 14px 0;
+  padding: var(--space-sm) 0;
+  position: relative;
 }
+.ticker::before,
+.ticker::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background-image: var(--rule-baste);
+}
+.ticker::before { top: 0; }
+.ticker::after  { bottom: 0; }
+
 .ticker__track {
   display: flex;
-  gap: 60px;
-  animation: ticker-scroll 18s linear infinite;
+  gap: var(--space-2xl);
+  animation: ticker-scroll 32s linear infinite;
   white-space: nowrap;
 }
 .ticker__item {
   font-family: var(--font-display);
-  font-size: 13px;
+  font-size: var(--text-md);
   font-style: italic;
-  color: rgba(240, 236, 228, 0.3);
-  letter-spacing: 1px;
+  color: var(--color-text-muted);
+  letter-spacing: var(--tracking-wide);
   flex-shrink: 0;
 }
 .ticker__sep {
   color: var(--color-gold);
-  margin: 0 8px;
+  margin: 0 var(--space-2xs);
 }
 @keyframes ticker-scroll {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
 
-/* ─── Works Section ─── */
-.works { padding: 80px 40px; }
+/* La cinta se detiene al pasar por encima: si algo se mueve sin parar
+   y lleva texto, hay que poder leerlo. */
+.ticker:hover .ticker__track { animation-play-state: paused; }
+
+/* ─── Works ───────────────────────────────────────────────────────
+   Cabecera de sección: rótulo a la izquierda, recuento a la derecha,
+   hilván debajo. Es el patrón que repiten Works y Colaboración. */
+.works { padding: var(--space-section) var(--space-gutter); }
 .works__header {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 56px;
-  border-bottom: 0.5px solid var(--color-border);
-  padding-bottom: 24px;
+  gap: var(--space-md);
+  margin-bottom: var(--space-2xl);
+  padding-bottom: var(--space-md);
+  position: relative;
+}
+.works__header::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 1px;
+  background-image: var(--rule-baste);
 }
 .works__label {
-  font-size: 9px;
-  letter-spacing: 4px;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
-  color: rgba(240, 236, 228, 0.4);
+  color: var(--color-text-muted);
 }
 .works__count {
   font-family: var(--font-display);
-  font-size: 44px;
+  font-size: var(--text-2xl);
   font-weight: 900;
   color: var(--color-text-ghost);
   user-select: none;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
 }
-.works__grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-auto-rows: 600px;
-  gap: 20px;
+
+/* ─── Stack de proyectos (tarjetas apiladas al hacer scroll) ─── */
+.works__stack {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.works__stack-item {
+  position: sticky;
+  top: 6rem;
+  height: 85vh;
+  padding-bottom: 40px;
+}
+.works__stack-card {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transform-origin: top center;
+  will-change: transform;
+}
+.works__stack-card .work-card {
+  height: 100%;
+}
+.works__stack-card .work-card__image-wrap {
+  border-radius: var(--radius-lg);
 }
 
 /* ─── Work Card (rediseño estético) ─── */
@@ -442,7 +987,7 @@ button { cursor: pointer; font-family: var(--font-body); }
   position: absolute;
   inset: 0;
   transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              filter 0.5s ease;
+              filter var(--dur-slow) ease;
   will-change: transform;
   filter: brightness(0.82);
 }
@@ -458,29 +1003,32 @@ button { cursor: pointer; font-family: var(--font-body); }
   background: linear-gradient(
     to bottom,
     transparent 30%,
-    rgba(8, 7, 6, 0.5) 70%,
-    rgba(8, 7, 6, 0.82) 100%
+    var(--color-scrim-soft) 70%,
+    var(--color-scrim) 100%
   );
   z-index: 1;
   pointer-events: none;
 }
 
-/* Número watermark */
+/* Número — antes casi invisible, ahora con color de acento */
+/* El número de look. En una colección el orden es información real
+   (la secuencia de pasarela), así que numerar aquí está justificado. */
 .work-card__number {
   font-family: var(--font-display);
-  font-size: 80px;
+  font-size: var(--text-2xl);
   font-weight: 900;
-  color: rgba(240, 236, 228, 0.07);
+  color: var(--gold-300);
+  opacity: 0.6;
   position: absolute;
-  top: 16px;
-  left: 20px;
+  top: var(--space-sm);
+  left: var(--space-md);
   user-select: none;
   line-height: 1;
   z-index: 2;
-  transition: opacity 0.35s ease;
+  font-variant-numeric: tabular-nums;
+  transition: opacity var(--dur-slow) var(--ease-out);
 }
-.work-card--wide .work-card__number { font-size: 120px; }
-.work-card:hover .work-card__number { opacity: 0.3; }
+.work-card:hover .work-card__number { opacity: 0.95; }
 
 /* Info siempre visible en la parte inferior */
 .work-card__info {
@@ -488,30 +1036,32 @@ button { cursor: pointer; font-family: var(--font-body); }
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 28px 24px 24px;
+  padding: var(--space-lg) var(--space-md) var(--space-md);
   z-index: 3;
-  transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: transform var(--dur-slow) var(--ease-out);
 }
 .work-card:hover .work-card__info {
   transform: translateY(-10px);
 }
 
+/* Todo lo de la tarjeta va sobre la fotografía: tokens "on-image". */
 .work-card__category {
-  font-size: 9px;
-  letter-spacing: 3px;
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: var(--color-gold);
-  margin-bottom: 8px;
+  color: var(--gold-300);
+  margin-bottom: var(--space-2xs);
   display: block;
 }
 
 .work-card__title {
   font-family: var(--font-display);
-  font-size: 20px;
+  font-size: var(--text-xl);
   font-weight: 400;
   font-style: italic;
-  color: var(--color-text);
-  line-height: 1.2;
+  color: var(--color-on-image);
+  line-height: var(--leading-tight);
   display: block;
 }
 
@@ -521,24 +1071,27 @@ button { cursor: pointer; font-family: var(--font-body); }
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 0 24px 22px;
+  padding: 0 var(--space-md) var(--space-md);
   z-index: 4;
   opacity: 0;
   transform: translateY(6px);
-  transition: opacity 0.35s ease, transform 0.4s ease;
+  transition: opacity var(--dur-slow) ease, transform var(--dur-slow) ease;
 }
 .work-card:hover .work-card__overlay {
   opacity: 1;
   transform: translateY(0);
 }
 
+/* Va sobre la fotografía, así que usa los tokens de imagen: da igual
+   el tema, debajo siempre hay una foto oscurecida. */
 .work-card__cta {
-  font-size: 9px;
-  letter-spacing: 3px;
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: var(--color-text-muted);
-  border-top: 0.5px solid rgba(240, 236, 228, 0.2);
-  padding-top: 10px;
+  color: var(--color-on-image);
+  border-top: 1px solid var(--color-border-on-image);
+  padding-top: var(--space-2xs);
   display: block;
 }
 
@@ -546,16 +1099,30 @@ button { cursor: pointer; font-family: var(--font-body); }
 .about {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  border-top: 0.5px solid var(--color-border);
-  border-bottom: 0.5px solid var(--color-border);
+  align-items: stretch;
+  position: relative;
 }
+/* Hilván arriba y abajo: la sección queda hilvanada a la página */
+.about::before,
+.about::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background-image: var(--rule-baste);
+  z-index: 1;
+}
+.about::before { top: 0; }
+.about::after  { bottom: 0; }
 .about__image {
-  background: #111;
-  min-height: 650px;
+  background: var(--color-surface);
+  /* Alto fluido, no aspect-ratio: en un grid con align-items:stretch
+     la altura la manda la fila, así que el aspect-ratio quedaba inerte.
+     El min-height sí se respeta y marca el suelo de la columna. */
+  min-height: clamp(420px, 58vh, 680px);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-right: 0.5px solid var(--color-border);
   position: relative;
   overflow: hidden;
 }
@@ -566,58 +1133,73 @@ button { cursor: pointer; font-family: var(--font-body); }
   position: absolute;
   inset: 0;
 }
-.about__rotated-text {
-  position: absolute;
-  top: 50%;
-  right: -50px;
-  font-family: var(--font-display);
-  font-size: 80px;
-  font-weight: 900;
-  font-style: italic;
-  color: rgba(240, 236, 228, 0.04);
-  writing-mode: vertical-rl;
-  transform: translateY(-50%);
-  user-select: none;
-}
+/* Silueta de reserva cuando no hay fotografía */
+.about__placeholder { color: var(--color-border-strong); }
 .about__content {
-  padding: 70px 60px;
+  padding: var(--space-section) var(--space-2xl);
   display: flex;
   flex-direction: column;
   justify-content: center;
+  /* Ancla del nombre vertical */
+  position: relative;
+}
+
+/* El nombre en vertical, a la manera del lomo de una revista. Vive en
+   el margen izquierdo de la columna de texto, sobre el fondo: encima
+   del retrato tapaba la cara y ningún nivel de opacidad lo arreglaba
+   —o no se leía, o se comía la foto. */
+.about__rotated-text {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-ghost);
+  writing-mode: vertical-rl;
+  user-select: none;
+  pointer-events: none;
 }
 .about__label {
-  font-size: 9px;
-  letter-spacing: 5px;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
   color: var(--color-gold);
-  margin-bottom: 28px;
+  margin-bottom: var(--space-lg);
 }
+/* La cita es la voz de la diseñadora: es lo que más pesa del bloque. */
 .about__quote {
   font-family: var(--font-display);
-  font-size: 34px;
+  font-size: var(--text-xl);
   font-weight: 400;
   font-style: italic;
-  line-height: 1.35;
+  line-height: var(--leading-snug);
   color: var(--color-text);
-  margin-bottom: 32px;
+  margin-bottom: var(--space-lg);
+  max-width: 22ch;
 }
 .about__body {
-  font-size: 12px;
-  font-weight: 200;
-  line-height: 1.9;
+  font-size: var(--text-base);
+  font-weight: 400;
+  line-height: var(--leading-body);
   color: var(--color-text-muted);
-  margin-bottom: 40px;
+  margin-bottom: var(--space-xl);
+  max-width: 58ch;
 }
-.about__actions { display: flex; gap: 16px; flex-wrap: wrap; }
+.about__actions { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
 
 /* ─── Clients ─── */
 .clients {
-  padding: 70px 40px;
-  border-bottom: 0.5px solid var(--color-border);
+  padding: var(--space-section) var(--space-gutter);
+  border-bottom: 1px solid var(--color-border);
 }
 .clients__label {
-  font-size: 9px;
-  letter-spacing: 5px;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
   color: var(--color-text-dim);
   margin-bottom: 40px;
@@ -632,18 +1214,32 @@ button { cursor: pointer; font-family: var(--font-body); }
 }
 .clients__item {
   font-family: var(--font-display);
-  font-size: 18px;
+  font-size: var(--text-lg);
   font-style: italic;
-  color: rgba(240, 236, 228, 0.2);
-  letter-spacing: 1px;
-  transition: color 0.3s;
+  color: var(--color-text-subtle);
+  letter-spacing: var(--tracking-wide);
+  transition: color var(--dur-base);
   cursor: default;
 }
-.clients__item:hover { color: rgba(240, 236, 228, 0.6); }
+.clients__item:hover { color: var(--color-on-image-muted); }
+
+/* ─── Collaborations (home) ─── */
+.collabs {
+  padding: var(--space-section) var(--space-gutter);
+  border-bottom: 1px solid var(--color-border);
+}
+@keyframes collabs-progress {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+
+@media (max-width: 900px) {
+  .collabs { padding: 60px 24px; }
+}
 
 /* ─── Contact ─── */
 .contact {
-  padding: 100px 40px;
+  padding: var(--space-section) var(--space-gutter);
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -654,112 +1250,185 @@ button { cursor: pointer; font-family: var(--font-body); }
   left: 50%;
   transform: translate(-50%, -50%);
   font-family: var(--font-display);
-  font-size: 160px;
+  font-size: var(--text-4xl);
   font-weight: 900;
-  color: rgba(240, 236, 228, 0.025);
+  color: var(--color-text-ghost);
   white-space: nowrap;
   pointer-events: none;
   user-select: none;
-  letter-spacing: -4px;
+  letter-spacing: var(--tracking-tight);
 }
 .contact__label {
-  font-size: 9px;
-  letter-spacing: 5px;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
   color: var(--color-gold);
-  margin-bottom: 24px;
+  margin-bottom: var(--space-md);
 }
 .contact__title {
   font-family: var(--font-display);
-  font-size: 52px;
+  font-size: var(--text-2xl);
   font-weight: 900;
-  line-height: 1;
+  line-height: var(--leading-none);
+  letter-spacing: var(--tracking-tight);
   color: var(--color-text);
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2xs);
 }
 .contact__title--italic {
   display: block;
   font-style: italic;
-  color: rgba(240, 236, 228, 0.4);
+  color: var(--color-text-muted);
 }
 .contact__email {
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: var(--text-lg);
   font-style: italic;
-  color: rgba(240, 236, 228, 0.35);
-  letter-spacing: 2px;
-  display: block;
-  margin: 32px 0 40px;
+  color: var(--color-gold);
+  letter-spacing: var(--tracking-wide);
+  display: inline-block;
+  margin: var(--space-lg) 0 var(--space-xl);
+  border-bottom: 1px solid var(--color-gold-dim);
+  padding-bottom: var(--space-3xs);
+  transition: border-color var(--dur-base) var(--ease-out);
 }
-.contact__actions { display: flex; gap: 16px; justify-content: center; }
+.contact__email:hover { border-color: var(--color-gold); }
+.contact__actions {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: center;
+  flex-wrap: wrap;
+}
 
-/* ─── Footer ─── */
+/* ─── Footer ─────────────────────────────────────────────────────── */
 .footer {
-  padding: 24px 40px;
-  border-top: 0.5px solid var(--color-border);
+  padding: var(--space-lg) var(--space-gutter);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  position: relative;
+}
+.footer::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 1px;
+  background-image: var(--rule-baste);
 }
 .footer__copy {
-  font-size: 9px;
-  letter-spacing: 2px;
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: rgba(240, 236, 228, 0.2);
+  color: var(--color-text-subtle);
+  font-variant-numeric: tabular-nums;
 }
 .footer__name {
   font-family: var(--font-display);
-  font-size: 13px;
-  letter-spacing: 4px;
-  color: rgba(240, 236, 228, 0.35);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-label);
+  color: var(--color-text-muted);
   text-transform: uppercase;
 }
-.footer__social { display: flex; gap: 20px; }
+.footer__social { display: flex; gap: var(--space-2xs); }
 .footer__social a {
-  font-size: 9px;
-  letter-spacing: 2px;
+  /* Enlaces de dos letras: sin un área mínima son casi imposibles de
+     pulsar en móvil. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: rgba(240, 236, 228, 0.25);
-  transition: color 0.25s;
+  color: var(--color-text-subtle);
+  transition: color var(--dur-base) var(--ease-out);
 }
 .footer__social a:hover { color: var(--color-gold); }
 
-/* ─── Responsive ─── */
+/* ─── Tope de ancho ───────────────────────────────────────────────
+   Por encima de 1440px el sitio deja de estirarse y se centra. Sin
+   esto, en un monitor ancho el titular del hero reparte tres palabras
+   a lo largo de metro y medio y la medida de lectura se rompe. */
+.navbar,
+.hero,
+.works,
+.about,
+.collabs,
+.contact,
+.footer {
+  max-width: var(--max-content);
+  margin-inline: auto;
+}
+
+/* ─── Responsive ──────────────────────────────────────────────────
+   Puntos de corte unificados en todo el sitio: 1024 / 768 / 480.
+   Los tamaños de letra y los márgenes ya son fluidos vía clamp(), así
+   que aquí sólo quedan los cambios de estructura: rejillas que se
+   apilan y elementos que cambian de sitio. */
+
 @media (max-width: 1024px) {
+  /* El hero pasa de dos columnas a una: la imagen baja bajo el texto */
   .hero {
     grid-template-columns: 1fr;
-    padding: 0 24px;
+    min-height: 0;
   }
   .hero__left {
-    border-right: none;
     padding-right: 0;
-    padding-bottom: 40px;
+    padding-bottom: var(--space-xl);
+  }
+  /* El hilván vertical entre columnas ya no separa nada: pasa a
+     horizontal, bajo el bloque de texto. */
+  .hero__left::after {
+    top: auto;
+    left: 0;
+    width: auto;
+    height: 1px;
+    background-image: var(--rule-baste);
   }
   .hero__right {
-    padding: 0 0 40px;
-    border-top: 0.5px solid var(--color-border);
+    padding: var(--space-xl) 0;
   }
-  .hero__title { font-size: 60px; }
-  .hero__year  { font-size: 80px; }
   .about { grid-template-columns: 1fr; }
+  /* Apilado, el retrato no necesita tanto alto: manda la proporción */
   .about__image {
-    min-height: 320px;
-    border-right: none;
-    border-bottom: 0.5px solid var(--color-border);
+    min-height: 0;
+    aspect-ratio: 3 / 2;
   }
-  .about__content  { padding: 48px 32px; }
-  .works, .clients, .contact { padding: 60px 24px; }
-  .navbar, .footer { padding: 20px 24px; }
+  .about__content { padding: var(--space-section) var(--space-gutter); }
+  /* El margen lateral se estrecha y el nombre vertical ya no cabe sin
+     invadir el texto. Es decoración: se retira. */
+  .about__rotated-text { display: none; }
 }
 
 @media (max-width: 768px) {
-  .hero__title         { font-size: 44px; }
-  .works__grid         { grid-template-columns: 1fr; grid-auto-rows: 80vw; }
-  .work-card--wide     { grid-column: span 1; }
-  .clients__list       { justify-content: center; gap: 28px; }
-  .contact__title      { font-size: 36px; }
-  .contact__bg-text    { font-size: 80px; }
-  .navbar__links       { display: none; }
+  /* El apilado sticky de Works necesita recorrido vertical que en
+     móvil no existe: las tarjetas pasan a fluir una tras otra. */
+  .works__stack-item {
+    position: static;
+    height: auto;
+    padding-bottom: var(--space-md);
+  }
+  .works__stack-card {
+    height: 118vw;
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero__bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+  }
+  /* El indicador vertical de scroll no cabe: se pone en horizontal */
+  .hero__scroll-hint { writing-mode: horizontal-tb; }
+  .contact__actions,
+  .about__actions { flex-direction: column; align-items: stretch; }
 }
 
 /* ═══════════════════════════════════════════════════
@@ -767,25 +1436,29 @@ button { cursor: pointer; font-family: var(--font-body); }
    ═══════════════════════════════════════════════════ */
 
 /* ── Hero: entrada escalonada ── */
+/* Cada pieza llega desplazada y algo reducida, y se asienta en su hueco:
+   misma frenada que el resto del sitio (.piece en Reveal.css). */
 @keyframes hero-fade-up {
   from {
     opacity: 0;
-    transform: translateY(22px);
+    transform: translateY(26px) scale(0.985);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 @keyframes hero-fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from { opacity: 0; transform: scale(0.99); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
-.hero-anim {
-  opacity: 0;
-  animation: hero-fade-up 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+.hero-anim { opacity: 0; }
+
+/* Igual que .hero-word: espera a que el loader se retire. */
+body.site-loaded .hero-anim {
+  animation: hero-fade-up 0.75s var(--ease-out) forwards;
 }
 
 .hero-anim--1 { animation-delay: 0.10s; }
@@ -795,28 +1468,22 @@ button { cursor: pointer; font-family: var(--font-body); }
 .hero-anim--5 { animation-delay: 0.64s; }
 
 /* La columna derecha entra con fade simple (más suave) */
-.hero__right.hero-anim {
+body.site-loaded .hero__right.hero-anim {
   animation-name: hero-fade-in;
   animation-duration: 1.1s;
 }
 
-/* Imagen del hero: leve zoom de salida al cargar */
-.hero__image-frame img {
-  animation: hero-img-zoom 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+/* Imagen del hero: leve zoom de salida al encajar el marco */
+body.site-loaded .hero__image-frame img {
+  animation: hero-img-zoom 1.4s var(--ease-out) forwards;
 }
 @keyframes hero-img-zoom {
   from { transform: scale(1.06); }
   to   { transform: scale(1); }
 }
 
-/* ── Navbar: línea dorada al hacer scroll ── */
-.navbar {
-  transition: border-color 0.4s ease, box-shadow 0.4s ease;
-}
-.navbar--scrolled {
-  border-bottom-color: rgba(201, 169, 110, 0.25);
-  box-shadow: 0 1px 0 0 rgba(201, 169, 110, 0.08);
-}
+/* El estado --scrolled del navbar se resuelve arriba, subiendo la
+   opacidad del hilván del pseudo ::after. */
 
 /* Punto del navbar: pulso continuo */
 .navbar__dot {
@@ -827,34 +1494,89 @@ button { cursor: pointer; font-family: var(--font-body); }
   50%       { opacity: 0.4; transform: scale(0.7); }
 }
 
-/* ── Scroll reveal ── */
-.reveal {
-  opacity: 0;
-  transform: translateY(36px);
-  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+/* ── Scroll reveal ──
+   El sistema de clases .reveal/.is-visible movido por IntersectionObserver
+   se retiró: ahora todo el reveal pasa por el componente <Reveal>
+   (src/components/Reveal.jsx), que anima con framer-motion y respeta
+   prefers-reduced-motion vía MotionConfig. Sus estilos viven en
+   src/components/Reveal.css bajo la clase .piece. */
+
+/* ── Navbar: subrayado de costura ──
+   Hilo dorado que se cose de izquierda a derecha al pasar por encima.
+   Mismo motivo que el borde del telón y el progreso de scroll. */
+.navbar__links a {
+  position: relative;
+  padding-bottom: 3px;
 }
-.reveal.is-visible {
-  opacity: 1;
-  transform: translateY(0);
+.navbar__links a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--color-gold);
+  transform: scaleX(0);
+  transform-origin: 0% 50%;
+  transition: transform var(--dur-slow) var(--ease-inout);
+}
+.navbar__links a:hover::after,
+.navbar__links a:focus-visible::after {
+  transform: scaleX(1);
 }
 
-/* Variantes de dirección (por si se quieren usar en el futuro) */
-.reveal--left  { transform: translateX(-32px); }
-.reveal--right { transform: translateX(32px);  }
-.reveal--left.is-visible,
-.reveal--right.is-visible { transform: translateX(0); }
+/* ── Cambio de tema: fundido en lugar de corte seco ──
+   La clase la pone ThemeContext solo durante el intercambio, para no
+   dejar transiciones permanentes sobre todo el árbol. */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition: background-color var(--dur-slow) ease,
+              color var(--dur-slow) ease,
+              border-color var(--dur-slow) ease,
+              fill var(--dur-slow) ease,
+              stroke var(--dur-slow) ease !important;
+}
 
-/* Respeta prefers-reduced-motion */
+/* ═══════════════════════════════════════════════════
+   PREFERS-REDUCED-MOTION — interruptor global
+   ═══════════════════════════════════════════════════ */
+
 @media (prefers-reduced-motion: reduce) {
+  /* Neutraliza toda animación y transición CSS del sitio: ticker,
+     dot-pulse, hero-img-zoom, collabs-progress, gradientes animados,
+     lightbox, flip-in… El `forwards` deja cada elemento en su estado
+     final, así que nada queda invisible. */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Red de seguridad: los bloques que arrancan ocultos deben quedar
+     visibles aunque su animación no llegue a dispararse. */
   .hero-anim,
   .hero-word,
-  .reveal {
+  .piece {
     animation: none !important;
     transition: none !important;
     opacity: 1 !important;
     transform: none !important;
     clip-path: none !important;
+  }
+
+  /* El cambio de tema no se funde: se aplica de golpe. */
+  .theme-transition,
+  .theme-transition *,
+  .theme-transition *::before,
+  .theme-transition *::after {
+    transition: none !important;
   }
 }
 
@@ -862,52 +1584,98 @@ button { cursor: pointer; font-family: var(--font-body); }
    CURSOR PERSONALIZADO
    ═══════════════════════════════════════════════════ */
 
-/* Ocultar cursor nativo en desktop */
+/* Ocultar cursor nativo en desktop, solo una vez que el cursor
+   personalizado ya está activo (si el JS no llega a activarlo,
+   el puntero nativo se queda visible como red de seguridad) */
 @media (pointer: fine) {
-  body { cursor: none; }
-  a, button, .work-card { cursor: none; }
+  body.cursor--active { cursor: none; }
+  body.cursor--active a,
+  body.cursor--active button,
+  body.cursor--active .work-card { cursor: none; }
 }
 
-.cursor-dot {
+/* Cruz de marcado: dos hilos de 1px cruzados sobre el punto exacto,
+   como la marca de registro que se traza en el patrón antes de cortar.
+   Va pegada al ratón, sin retardo, para no perder precisión. */
+.cursor-mark {
   position: fixed;
   top: 0; left: 0;
-  width: 5px; height: 5px;
-  background: var(--color-gold);
-  border-radius: 50%;
+  width: 0; height: 0;
   pointer-events: none;
   z-index: 9999;
-  margin-left: -2.5px;
-  margin-top: -2.5px;
   will-change: transform;
+  filter: drop-shadow(0 0 2px var(--color-overlay));
 }
 
+.cursor-mark::before,
+.cursor-mark::after {
+  content: '';
+  position: absolute;
+  background: var(--color-gold);
+  transform-origin: 50% 50%;
+  transition: transform var(--dur-slow) var(--ease-soft);
+}
+.cursor-mark::before { left: -5.5px; top: -0.5px;  width: 11px; height: 1px; }
+.cursor-mark::after  { top: -5.5px; left: -0.5px;  width: 1px;  height: 11px; }
+
+/* Aro de hilván: puntada discontinua que sigue a la cruz con retardo
+   y gira muy despacio, como el hilo corrido a mano sobre la tela */
 .cursor-ring {
   position: fixed;
   top: 0; left: 0;
-  width: 36px; height: 36px;
-  border: 1px solid rgba(201, 169, 110, 0.55);
-  border-radius: 50%;
+  width: 44px; height: 44px;
+  margin-left: -22px;
+  margin-top: -22px;
+  overflow: visible;
   pointer-events: none;
   z-index: 9998;
-  margin-left: -18px;
-  margin-top: -18px;
   will-change: transform;
-  transition: width 0.25s ease, height 0.25s ease,
-              margin 0.25s ease, border-color 0.25s ease,
-              background 0.25s ease;
 }
 
-.cursor-ring--hover {
-  width: 56px; height: 56px;
-  margin-left: -28px; margin-top: -28px;
-  border-color: rgba(201, 169, 110, 0.9);
-  background: rgba(201, 169, 110, 0.06);
+.cursor-ring__scale {
+  transform-origin: 22px 22px;
+  transition: transform var(--dur-slow) var(--ease-soft);
 }
+
+.cursor-ring__baste {
+  fill: none;
+  stroke: var(--color-gold);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-dasharray: 3 7;
+  opacity: 0.5;
+  transform-origin: 50% 50%;
+  animation: cursor-baste 18s linear infinite;
+  transition: opacity var(--dur-slow) ease, stroke-dasharray var(--dur-slow) ease;
+}
+
+@keyframes cursor-baste {
+  to { transform: rotate(360deg); }
+}
+
+/* Sobre lo pulsable el hilván se cierra —no se abre— y aprieta la
+   puntada: el gesto de fijar un alfiler, no el de señalar */
+body.cursor--hover .cursor-ring__scale { transform: scale(0.6); }
+body.cursor--hover .cursor-ring__baste {
+  opacity: 0.95;
+  stroke-dasharray: 2 4;
+}
+/* …y la cruz gira a aspa: de marcar a cortar */
+body.cursor--hover .cursor-mark::before { transform: rotate(45deg) scaleX(0.8); }
+body.cursor--hover .cursor-mark::after  { transform: rotate(45deg) scaleY(0.8); }
+
+/* Al pulsar, el aro se cierra del todo un instante */
+body.cursor--press .cursor-ring__scale { transform: scale(0.44); }
 
 /* Ocultar cuando el ratón sale de la ventana */
-body:not(.cursor--active) .cursor-dot,
+.cursor-mark, .cursor-ring { transition: opacity var(--dur-base) ease; }
+body:not(.cursor--active) .cursor-mark,
 body:not(.cursor--active) .cursor-ring {
   opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-ring__baste { animation: none; }
 }
 
 /* ═══════════════════════════════════════════════════
@@ -924,17 +1692,17 @@ body:not(.cursor--active) .cursor-ring {
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(10, 10, 10, 0.55) 0%,
+    var(--color-scrim-soft) 0%,
     transparent 35%,
     transparent 55%,
-    rgba(10, 10, 10, 0.85) 100%
+    var(--color-scrim) 100%
   );
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 24px;
+  padding: var(--space-md);
   opacity: 0;
-  transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity var(--dur-slow) var(--ease-soft);
 }
 
 .hero__image-frame:hover .hero__editorial-overlay {
@@ -950,13 +1718,13 @@ body:not(.cursor--active) .cursor-ring {
 
 .hero__editorial-tag {
   font-family: var(--font-body);
-  font-size: 9px;
-  font-weight: 300;
-  letter-spacing: 4px;
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
-  color: rgba(240, 236, 228, 0.7);
+  color: var(--color-on-image-muted);
   transform: translateY(-6px);
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.05s;
+  transition: transform var(--dur-slow) var(--ease-soft) 0.05s;
 }
 .hero__image-frame:hover .hero__editorial-tag {
   transform: translateY(0);
@@ -964,12 +1732,12 @@ body:not(.cursor--active) .cursor-ring {
 
 .hero__editorial-year {
   font-family: var(--font-display);
-  font-size: 11px;
+  font-size: var(--text-xs);
   font-style: italic;
   color: var(--color-gold);
-  letter-spacing: 2px;
+  letter-spacing: var(--tracking-label);
   transform: translateY(-6px);
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.08s;
+  transition: transform var(--dur-slow) var(--ease-soft) 0.08s;
 }
 .hero__image-frame:hover .hero__editorial-year {
   transform: translateY(0);
@@ -981,7 +1749,7 @@ body:not(.cursor--active) .cursor-ring {
   flex-direction: column;
   gap: 4px;
   transform: translateY(10px);
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.05s;
+  transition: transform var(--dur-slow) var(--ease-soft) 0.05s;
 }
 .hero__image-frame:hover .hero__editorial-bottom {
   transform: translateY(0);
@@ -989,18 +1757,18 @@ body:not(.cursor--active) .cursor-ring {
 
 .hero__editorial-name {
   font-family: var(--font-display);
-  font-size: 22px;
+  font-size: var(--text-lg);
   font-weight: 700;
   color: var(--color-text);
   line-height: 1;
 }
 
 .hero__editorial-role {
-  font-size: 9px;
-  font-weight: 300;
-  letter-spacing: 3px;
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: rgba(240, 236, 228, 0.6);
+  color: var(--color-on-image-muted);
 }
 
 .hero__editorial-line {
@@ -1010,38 +1778,49 @@ body:not(.cursor--active) .cursor-ring {
   margin: 6px 0;
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
+  transition: transform var(--dur-slow) var(--ease-soft) var(--dur-fast);
 }
 .hero__image-frame:hover .hero__editorial-line {
   transform: scaleX(1);
 }
 
 .hero__editorial-city {
-  font-size: 8px;
-  letter-spacing: 3px;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: rgba(201, 169, 110, 0.7);
+  color: var(--gold-300);
 }
 
 /* ═══════════════════════════════════════════════════
    ABOUT — ESTADÍSTICAS
    ═══════════════════════════════════════════════════ */
 
+/* La franja de cifras se lee como una regla graduada: hilván arriba y
+   abajo, y una puntada vertical entre casilla y casilla. */
 .about__stats {
   display: flex;
   gap: 0;
-  margin: 32px 0 28px;
-  border-top: 0.5px solid var(--color-border);
-  border-bottom: 0.5px solid var(--color-border);
+  margin: var(--space-lg) 0;
+  position: relative;
 }
+.about__stats::before,
+.about__stats::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background-image: var(--rule-baste);
+}
+.about__stats::before { top: 0; }
+.about__stats::after  { bottom: 0; }
 
 .about__stat {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 20px 0;
+  gap: var(--space-3xs);
+  padding: var(--space-md) var(--space-2xs);
   position: relative;
 }
 
@@ -1049,113 +1828,170 @@ body:not(.cursor--active) .cursor-ring {
   content: '';
   position: absolute;
   left: 0; top: 20%; bottom: 20%;
-  width: 0.5px;
-  background: var(--color-border);
+  width: 1px;
+  background-image: var(--rule-baste-v);
 }
 
 .about__stat-num {
   font-family: var(--font-display);
-  font-size: 42px;
+  font-size: var(--text-2xl);
   font-weight: 900;
   line-height: 1;
   color: var(--color-gold);
   font-style: italic;
+  font-variant-numeric: tabular-nums;
 }
 
 .about__stat-label {
-  font-size: 8px;
-  letter-spacing: 2.5px;
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--color-text-muted);
   text-align: center;
+  text-wrap: balance;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ABOUT — «el bloque se hilvana»
+   ───────────────────────────────────────────────────────────────
+   Un solo gesto orquestado en lugar de efectos sueltos: al entrar la
+   sección, las puntadas se cosen de izquierda a derecha, el retrato se
+   posa como una pieza de tela y un hilo dorado baja por el costado de
+   la cita. Las piezas de texto siguen entrando con el motor de siempre.
+
+   Todo cuelga de `.reveal-ready`, que ScrollReveal sólo pone si va a
+   animar. Sin JS —o con prefers-reduced-motion— ninguno de estos
+   estados iniciales llega a aplicarse y la sección se pinta quieta.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 1. El hilván se cose ──
+   background-size de 0 a 100%: el patrón de puntada mantiene sus 4/6px
+   y lo que crece es la región pintada, así que se lee como hilo
+   corriendo por la tela y no como una barra estirándose. */
+.reveal-ready .about::before,
+.reveal-ready .about::after,
+.reveal-ready .about__stats::before,
+.reveal-ready .about__stats::after {
+  background-repeat: no-repeat;
+  background-size: 0 100%;
+  transition: background-size 1100ms var(--ease-out);
+}
+.reveal-ready .about.is-visible::before,
+.reveal-ready .about.is-visible::after {
+  background-size: 100% 100%;
+}
+/* La de abajo cierra el rectángulo un instante después de la de arriba */
+.reveal-ready .about.is-visible::after { transition-delay: 140ms; }
+
+/* Las cifras cuelgan de la columna de texto, no de la sección: en móvil
+   quedan mucho más abajo y tienen que coserse cuando llegas a ellas. */
+.reveal-ready .about__content.is-visible .about__stats::before,
+.reveal-ready .about__content.is-visible .about__stats::after {
+  background-size: 100% 100%;
+}
+.reveal-ready .about__content.is-visible .about__stats::after {
+  transition-delay: 120ms;
+}
+
+/* ── 2. El retrato se posa ──
+   Zoom largo que se asienta: es ambiental, del mismo registro que el
+   del hero. No compite con la entrada de la pieza, la acompaña. */
+.reveal-ready .about__image img {
+  transform: scale(1.1);
+  transition: transform 1800ms var(--ease-out);
+}
+.reveal-ready .about.is-visible .about__image img {
+  transform: scale(1);
+}
+
+/* ── 3. El hilo dorado de la cita ──
+   La cita es la voz de la diseñadora: se marca como cita al vuelo, con
+   un hilo que baja por el costado mientras el texto encaja. */
+.about__quote {
+  position: relative;
+  padding-left: var(--space-md);
+}
+.about__quote::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--color-gold);
+}
+.reveal-ready .about__quote::before {
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 800ms var(--ease-out) 260ms;
+}
+.reveal-ready .about__content.is-visible .about__quote::before {
+  transform: scaleY(1);
+}
+
+/* ── 4. Las puntadas verticales entre cifras ── */
+.reveal-ready .about__stat + .about__stat::before {
+  transform: scaleY(0);
+  transition: transform 700ms var(--ease-out) 420ms;
+}
+.reveal-ready .about__content.is-visible .about__stat + .about__stat::before {
+  transform: scaleY(1);
+}
+
+/* ── 5. El nombre en vertical sube a su sitio ── */
+.reveal-ready .about__rotated-text {
+  opacity: 0;
+  transform: translateY(-50%) translateY(28px);
+  transition: opacity 900ms var(--ease-out) 320ms,
+              transform 900ms var(--ease-out) 320ms;
+}
+.reveal-ready .about__content.is-visible .about__rotated-text {
+  opacity: 1;
+  transform: translateY(-50%);
+}
+
+/* Segunda red: si la preferencia de movimiento cambia a mitad de
+   sesión, `.reveal-ready` puede seguir puesto. Todo queda dado. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-ready .about::before,
+  .reveal-ready .about::after,
+  .reveal-ready .about__stats::before,
+  .reveal-ready .about__stats::after {
+    background-size: 100% 100% !important;
+  }
+  .reveal-ready .about__image img,
+  .reveal-ready .about__quote::before,
+  .reveal-ready .about__stat + .about__stat::before {
+    transform: none !important;
+  }
+  .reveal-ready .about__rotated-text {
+    opacity: 1 !important;
+    transform: translateY(-50%) !important;
+  }
+  .reveal-ready .about *,
+  .reveal-ready .about *::before,
+  .reveal-ready .about *::after { transition: none !important; }
 }
 
 @media (max-width: 768px) {
   .hero__editorial-overlay { padding: 16px; }
-  .hero__editorial-name    { font-size: 18px; }
-  .about__stat-num         { font-size: 32px; }
-  .cursor-dot, .cursor-ring { display: none; }
+  .hero__editorial-name    { font-size: var(--text-lg); }
+  .about__stat-num         { font-size: var(--text-xl); }
+  .cursor-mark, .cursor-ring { display: none; }
 }
 
-/* ═══════════════════════════════════════════════════
-   MODO CLARO — overrides de colores hardcodeados
-   ═══════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   MODO CLARO — ajustes perceptuales
+   ───────────────────────────────────────────────────────────────
+   Aquí había ~40 reglas remendando colores que los componentes
+   escribían a mano. Ya no hacen falta: todo consume tokens y el
+   tema se resuelve solo al reasignarlos.
 
-/* Hero: gradiente de fondo del texto en la imagen */
-[data-theme="light"] .hero__editorial-overlay {
-  background: linear-gradient(
-    to bottom,
-    rgba(46, 31, 16, 0.5) 0%,
-    transparent 35%,
-    transparent 55%,
-    rgba(46, 31, 16, 0.75) 100%
-  );
-}
-[data-theme="light"] .hero__editorial-name  { color: #f0ece4; }
-[data-theme="light"] .hero__editorial-tag,
-[data-theme="light"] .hero__editorial-city  { color: rgba(240, 236, 228, 0.75); }
-[data-theme="light"] .hero__editorial-role  { color: rgba(240, 236, 228, 0.6); }
+   Lo único que queda es lo que de verdad depende del tema y no se
+   puede expresar como un cambio de color: la sombra (sobre fondo
+   claro necesita otra densidad para leerse como elevación) y el
+   peso de la puntada del cursor.
+   ═══════════════════════════════════════════════════════════════ */
 
-/* Ticker */
-[data-theme="light"] .ticker { background: var(--color-surface2); }
-
-/* Work cards: sombra de hover más intensa */
-[data-theme="light"] .work-card:hover { box-shadow: 0 8px 40px rgba(46,31,16,0.3); }
-
-/* Cursor */
-[data-theme="light"] .cursor-dot  { background: var(--color-gold); }
-[data-theme="light"] .cursor-ring { border-color: rgba(122, 78, 26, 0.55); }
-[data-theme="light"] .cursor-ring--hover { border-color: rgba(122, 78, 26, 0.9); background: rgba(122, 78, 26, 0.08); }
-
-/* About stats */
-[data-theme="light"] .about__stat-num { color: var(--color-gold); }
-
-/* Scroll hint */
-[data-theme="light"] .hero__scroll-hint { color: var(--color-text-muted); }
-
-/* Botones */
-[data-theme="light"] .btn {
-  border-color: rgba(46, 31, 16, 0.35);
-  color: var(--color-text);
-}
-[data-theme="light"] .btn:hover {
-  border-color: var(--color-gold);
-  color: var(--color-gold);
-}
-[data-theme="light"] .btn--gold {
-  background: var(--color-gold);
-  color: #f0ece4;
-  border-color: var(--color-gold);
-}
-[data-theme="light"] .btn--gold:hover {
-  background: transparent;
-  color: var(--color-gold);
-}
-
-/* Navbar scrolled en claro */
-[data-theme="light"] .navbar--scrolled {
-  border-bottom-color: rgba(46, 31, 16, 0.2);
-  box-shadow: 0 1px 0 0 rgba(46, 31, 16, 0.08);
-  background: rgba(200, 168, 130, 0.96);
-}
-
-/* Navbar base en claro: texto visible */
-[data-theme="light"] .navbar__name { color: var(--color-text); }
-[data-theme="light"] .navbar__links a { color: rgba(46, 31, 16, 0.55); }
-[data-theme="light"] .navbar__links a:hover { color: var(--color-text); }
-[data-theme="light"] .lang-switcher__btn { color: rgba(46, 31, 16, 0.45); }
-[data-theme="light"] .lang-switcher__btn--active { color: var(--color-gold); }
-[data-theme="light"] .navbar__theme-toggle { color: rgba(46, 31, 16, 0.55); border-color: rgba(46,31,16,0.2); }
-
-/* About quote y body */
-[data-theme="light"] .about__quote { border-left-color: var(--color-gold); }
-[data-theme="light"] .about__stat { border-color: rgba(46,31,16,0.15); }
-
-/* Contact bg-text */
-[data-theme="light"] .contact__bg-text { color: rgba(46, 31, 16, 0.06); }
-
-/* Footer */
-[data-theme="light"] .footer { border-top-color: rgba(46, 31, 16, 0.15); }
-[data-theme="light"] .footer__copy,
-[data-theme="light"] .footer__name,
-[data-theme="light"] .footer__social a { color: rgba(46, 31, 16, 0.55); }
+[data-theme="light"] .cursor-ring__baste { opacity: 0.7; }

@@ -3,7 +3,11 @@ const translations = {
     // Navbar
     nav_works: 'Trabajos Seleccionados',
     nav_about: 'Acerca de mí',
+    nav_collabs: 'Colaboraciones',
     nav_contact: 'Contacto',
+
+    // Ticker de disciplinas
+    ticker_items: ['Estilismo', 'Dirección creativa', 'Moda editorial', 'Lookbook', 'Dirección de arte', 'Campaña'],
 
     // Hero
     hero_tag: ' Diseñadora de moda Junior · Patronista · Estilista',
@@ -20,6 +24,14 @@ const translations = {
     // Works
     works_label: 'Trabajos seleccionados',
     work_cta: 'Ver proyecto →',
+
+    // Colaboraciones
+    collabs_label: 'Colaboraciones',
+    collabs_title: 'Marcas y proyectos con los que he colaborado',
+    collabs_cta: 'Ver todas las colaboraciones →',
+    collabs_page_label: 'Colaboraciones',
+    collabs_page_title: 'Con quién he trabajado',
+    collabs_page_subtitle: 'Una selección de marcas, editoriales y proyectos en los que he colaborado como diseñadora, patronista o estilista.',
 
     // About
     about_label: 'Sobre Aitana',
@@ -132,7 +144,9 @@ const translations = {
   en: {
     nav_works: 'Selected Works',
     nav_about: 'About Me',
+    nav_collabs: 'Collaborations',
     nav_contact: 'Contact',
+    ticker_items: ['Styling', 'Creative direction', 'Editorial fashion', 'Lookbook', 'Art direction', 'Campaign'],
     hero_tag: 'Stylist · Creative Director · Madrid',
     hero_line1: 'Fashion',
     hero_line2: 'is my',
@@ -145,6 +159,12 @@ const translations = {
     hero_editorial_city: 'Madrid — Paris — New York',
     works_label: 'Selected Works',
     work_cta: 'View project →',
+    collabs_label: 'Collaborations',
+    collabs_title: 'Brands and projects I have collaborated with',
+    collabs_cta: 'View all collaborations →',
+    collabs_page_label: 'Collaborations',
+    collabs_page_title: 'Who I\'ve worked with',
+    collabs_page_subtitle: 'A selection of brands, editorials and projects I have collaborated on as a designer, pattern maker or stylist.',
     about_label: 'About Aitana',
     about_quote:
       '"Fashion is not just clothing. It is the silent language with which I tell the world who I am."',
@@ -243,7 +263,9 @@ const translations = {
   fr: {
     nav_works: 'Travaux Sélectionnés',
     nav_about: 'À Propos',
+    nav_collabs: 'Collaborations',
     nav_contact: 'Contact',
+    ticker_items: ['Stylisme', 'Direction créative', 'Mode éditoriale', 'Lookbook', 'Direction artistique', 'Campagne'],
     hero_tag: 'Styliste · Directrice Créative · Madrid',
     hero_line1: 'Fashion',
     hero_line2: 'is my',
@@ -256,6 +278,12 @@ const translations = {
     hero_editorial_city: 'Madrid — Paris — New York',
     works_label: 'Travaux Sélectionnés',
     work_cta: 'Voir le projet →',
+    collabs_label: 'Collaborations',
+    collabs_title: 'Marques et projets avec lesquels j\'ai collaboré',
+    collabs_cta: 'Voir toutes les collaborations →',
+    collabs_page_label: 'Collaborations',
+    collabs_page_title: 'Avec qui j\'ai travaillé',
+    collabs_page_subtitle: 'Une sélection de marques, éditoriaux et projets auxquels j\'ai collaboré en tant que designer, modéliste ou styliste.',
     about_label: "À Propos d'Aitana",
     about_quote:
       '"La mode n\'est pas que des vêtements. C\'est le langage silencieux avec lequel je dis au monde qui je suis."',
@@ -354,7 +382,9 @@ const translations = {
   it: {
     nav_works: 'Lavori Selezionati',
     nav_about: 'Chi Sono',
+    nav_collabs: 'Collaborazioni',
     nav_contact: 'Contatto',
+    ticker_items: ['Styling', 'Direzione creativa', 'Moda editoriale', 'Lookbook', 'Direzione artistica', 'Campagna'],
     hero_tag: 'Stilista · Direttrice Creativa · Madrid',
     hero_line1: 'Fashion',
     hero_line2: 'is my',
@@ -367,6 +397,12 @@ const translations = {
     hero_editorial_city: 'Madrid — Parigi — New York',
     works_label: 'Lavori Selezionati',
     work_cta: 'Vedi il progetto →',
+    collabs_label: 'Collaborazioni',
+    collabs_title: 'Marchi e progetti con cui ho collaborato',
+    collabs_cta: 'Vedi tutte le collaborazioni →',
+    collabs_page_label: 'Collaborazioni',
+    collabs_page_title: 'Con chi ho lavorato',
+    collabs_page_subtitle: 'Una selezione di marchi, editoriali e progetti a cui ho collaborato come designer, modellista o stilista.',
     about_label: 'Su Aitana',
     about_quote:
       '"La moda non è solo abbigliamento. È il linguaggio silenzioso con cui dico al mondo chi sono."',

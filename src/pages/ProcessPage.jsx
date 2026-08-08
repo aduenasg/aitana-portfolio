@@ -5,6 +5,7 @@
  */
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 
 /* ── Imágenes de proceso ─────────────────────────────── */
 import ProcBotones       from '../img/proceso-botones.png';
@@ -93,39 +94,31 @@ const ProcessPage = () => {
     <div className="process-page">
 
       {/* ── Navbar ── */}
-      <nav className="navbar">
-        <div className="navbar__brand">
-          <div className="navbar__dot" />
-          <Link to="/" className="navbar__name">Aitana Núñez</Link>
-        </div>
-        <ul className="navbar__links">
-          <li><Link to="/#works">Obras</Link></li>
-          <li><Link to="/#about">Studio</Link></li>
-          <li><Link to="/#contact">Contacto</Link></li>
-        </ul>
-      </nav>
+      <Navbar variant="inner" />
 
       {/* ── Hero ── */}
       <header className="process-hero">
-        <div className="process-hero__bg-text" aria-hidden="true">CLO3D</div>
-        <div className="process-hero__content">
-          <p className="process-hero__label">Proceso creativo · Diseño digital</p>
-          <h1 className="process-hero__title">Behind the<span className="process-hero__title--italic"> collection.</span></h1>
-          <p className="process-hero__sub">
+        {/* Zoom y no desplazamiento: es un rótulo a sangre y cualquier
+            viaje lateral asomaría por el borde de la pantalla. */}
+        <div className="process-hero__bg-text animate-on-scroll reveal-zoom reveal-slow" aria-hidden="true">CLO3D</div>
+        <div className="process-hero__content reveal-stagger">
+          <p className="process-hero__label animate-on-scroll reveal-up reveal-near reveal-fast">Proceso creativo · Diseño digital</p>
+          <h1 className="process-hero__title animate-on-scroll reveal-up">Behind the<span className="process-hero__title--italic"> collection.</span></h1>
+          <p className="process-hero__sub animate-on-scroll reveal-up reveal-near">
             Documentación del proceso de diseño y simulación en CLO 3D —
             trabajo final del Grado en Tecnología y Moda, Universidad Rey Juan Carlos 2025.
           </p>
         </div>
-        <div className="process-hero__meta">
-          <div className="process-hero__meta-item">
+        <div className="process-hero__meta reveal-stagger reveal-stagger--tight">
+          <div className="process-hero__meta-item animate-on-scroll reveal-up reveal-near reveal-fast">
             <span className="process-hero__meta-label">Software</span>
             <span className="process-hero__meta-value">CLO 3D 2024.2</span>
           </div>
-          <div className="process-hero__meta-item">
+          <div className="process-hero__meta-item animate-on-scroll reveal-up reveal-near reveal-fast">
             <span className="process-hero__meta-label">Modelos</span>
             <span className="process-hero__meta-value">0{MODELS.length} diseños</span>
           </div>
-          <div className="process-hero__meta-item">
+          <div className="process-hero__meta-item animate-on-scroll reveal-up reveal-near reveal-fast">
             <span className="process-hero__meta-label">Institución</span>
             <span className="process-hero__meta-value">URJC Madrid</span>
           </div>
@@ -141,7 +134,7 @@ const ProcessPage = () => {
             style={{ '--model-color': model.color }}
           >
             {/* Cabecera del modelo */}
-            <div className="process-model__header">
+            <div className="process-model__header animate-on-scroll reveal-up">
               <span className="process-model__number">{model.number}</span>
               <div className="process-model__info">
                 <h2 className="process-model__title">{model.title}</h2>
@@ -152,12 +145,18 @@ const ProcessPage = () => {
               </span>
             </div>
 
-            {/* Grid de capturas */}
+            {/* Grid de capturas.
+                Sin `reveal-stagger` en la rejilla: es demasiado alta y
+                el grupo se dispararía entero al asomar su borde. Cada
+                captura lleva su propio observador y entra al llegar el
+                scroll. El índice por columna (si % 3) le da el retraso
+                progresivo dentro de cada fila. */}
             <div className="process-model__grid">
               {model.steps.map((step, si) => (
                 <button
                   key={si}
-                  className="process-step"
+                  className="process-step animate-on-scroll reveal-up reveal-near"
+                  style={{ '--reveal-index': si % 3 }}
                   onClick={() => setLightbox({ src: step.img, caption: step.caption })}
                   aria-label={`Ampliar: ${step.caption}`}
                 >
@@ -177,7 +176,7 @@ const ProcessPage = () => {
 
             {/* Divisor entre modelos (no en el último) */}
             {mi < MODELS.length - 1 && (
-              <div className="process-divider" aria-hidden="true">
+              <div className="process-divider animate-on-scroll reveal-fade" aria-hidden="true">
                 <span className="process-divider__line" />
                 <span className="process-divider__dot">✦</span>
                 <span className="process-divider__line" />
@@ -188,7 +187,7 @@ const ProcessPage = () => {
       </div>
 
       {/* ── Footer ── */}
-      <footer className="footer">
+      <footer className="footer animate-on-scroll reveal-up reveal-near reveal-fast">
         <span className="footer__copy">© 2026 Aitana Núñez</span>
         <Link to="/#works" className="footer__name">← Volver a proyectos</Link>
         <nav className="footer__social">

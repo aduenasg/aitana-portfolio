@@ -1,0 +1,67 @@
+/* ═══════════════════════════════════════════════════
+   PIEZA — remates del componente <Reveal>
+   ═══════════════════════════════════════════════════
+
+   El movimiento base (desplazamiento, escala, opacidad, escalonado)
+   vive en src/styles/reveal.css bajo `.animate-on-scroll`. Aquí sólo
+   están los dos remates propios de <Reveal>: el recorte y la costura. */
+
+
+/* ── Recorte ──
+   La pieza se completa por su borde de arrastre mientras viaja, como
+   si se terminara de cortar sobre la mesa. Desactivado por defecto: se
+   comería cualquier decoración que sobresalga del contenedor. */
+
+.reveal-ready .piece--cut {
+  clip-path: var(--reveal-clip, inset(0 0 14% 0));
+}
+
+.reveal-ready .piece--cut.is-visible {
+  clip-path: inset(0 0 0 0);
+}
+
+
+/* ── Costura ──
+   Hilo dorado que se cose por el borde inferior una vez la pieza ya
+   está asentada: de ahí el retraso igual a la duración de la entrada.
+   Mismo motivo que el borde del telón de ruta y el progreso de scroll. */
+
+.piece--seam {
+  position: relative;
+}
+
+.piece__seam {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  transform: scaleX(0);
+  transform-origin: 0% 50%;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-gold) 22%,
+    var(--color-gold) 78%,
+    transparent
+  );
+  pointer-events: none;
+}
+
+.piece--seam.is-visible .piece__seam {
+  animation: piece-seam 1.05s ease-out both;
+  animation-delay: calc(var(--reveal-delay, 0ms) + var(--reveal-duration, 700ms));
+}
+
+@keyframes piece-seam {
+  0%   { transform: scaleX(0);    opacity: 0; }
+  18%  { transform: scaleX(0.18); opacity: 1; }
+  55%  { transform: scaleX(0.55); opacity: 1; }
+  100% { transform: scaleX(1);    opacity: 0; }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .piece__seam { display: none; }
+}
