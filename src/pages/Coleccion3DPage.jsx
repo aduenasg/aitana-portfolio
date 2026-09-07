@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import PROJECTS from '../data/projects';
 import CardCoverFlow from '../components/CardCoverFlow';
 import Navbar from '../components/Navbar';
+import { useLang } from '../context/LangContext';
 
 /* ─── Slider de fotos del modelo activo (CardCoverFlow) ──────────────
    Pasando el ratón por encima de cada miniatura se muestra esa foto. ── */
@@ -34,18 +35,39 @@ const ModelPhotoCoverFlow = ({ images, title, accent }) => {
 
 /* ─── Página ──────────────────────────────────────────────── */
 const Coleccion3DPage = () => {
+  const { t, tp } = useLang();
   const [activeModel, setActiveModel] = useState(0);
   const project = PROJECTS.find(p => p.id === '__coleccion3d__');
   if (!project) return null;
 
   const { modelos3d } = project;
-  const model = modelos3d[activeModel];
+
+  /* Traducción: igual criterio que ProjectPage — cae al español de
+     PROJECTS campo a campo cuando falta el dato en el idioma activo.
+     Los modelos no tienen id propio, así que se emparejan por índice
+     con el array modelos3d de translations.js (mismo orden y longitud
+     que el de PROJECTS). */
+  const tr = tp('__coleccion3d__');
+  const trModels = tr.modelos3d || [];
+  const displayTitle    = tr.title    || project.title;
+  const displayCategory = tr.category || project.category;
+  const displaySubtitle = tr.subtitle || project.subtitle;
+
+  const displayModels = modelos3d.map((m, i) => ({
+    ...m,
+    title: trModels[i]?.title || m.title,
+    subtitle: trModels[i]?.subtitle || m.subtitle,
+    description: trModels[i]?.description || m.description,
+  }));
+  const model = displayModels[activeModel];
 
   /* índices prev/next para navegación entre proyectos */
   const allProjects  = PROJECTS;
   const myIndex      = allProjects.findIndex(p => p.id === '__coleccion3d__');
   const prevProject  = allProjects[myIndex - 1];
   const nextProject  = allProjects[myIndex + 1];
+  const prevTitle = prevProject ? (tp(prevProject.id).title || prevProject.title) : null;
+  const nextTitle = nextProject ? (tp(nextProject.id).title || nextProject.title) : null;
 
   return (
     <div className="c3d-page">
@@ -73,7 +95,7 @@ const Coleccion3DPage = () => {
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.6, delay: 0.05 }}
           >
-            {project.category}
+            {displayCategory}
           </motion.p>
           <motion.h1
             className="project-hero__title"
@@ -82,7 +104,7 @@ const Coleccion3DPage = () => {
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.7, delay: 0.15 }}
           >
-            {project.title}
+            {displayTitle}
           </motion.h1>
           <motion.p
             className="project-hero__subtitle"
@@ -91,7 +113,7 @@ const Coleccion3DPage = () => {
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            {project.subtitle}
+            {displaySubtitle}
           </motion.p>
         </div>
         <motion.div
@@ -106,15 +128,15 @@ const Coleccion3DPage = () => {
             <span className="project-hero__meta-value">CLO 3D 2024.2</span>
           </div>
           <div className="project-hero__meta-item">
-            <span className="project-hero__meta-label">Modelos</span>
-            <span className="project-hero__meta-value">0{modelos3d.length} diseños</span>
+            <span className="project-hero__meta-label">{t('c3d_models_label')}</span>
+            <span className="project-hero__meta-value">0{modelos3d.length} {t('c3d_designs_suffix')}</span>
           </div>
           <div className="project-hero__meta-item">
-            <span className="project-hero__meta-label">Año</span>
+            <span className="project-hero__meta-label">{t('project_year')}</span>
             <span className="project-hero__meta-value">{project.year}</span>
           </div>
           <div className="project-hero__meta-item">
-            <span className="project-hero__meta-label">Institución</span>
+            <span className="project-hero__meta-label">{t('c3d_institution_label')}</span>
             <span className="project-hero__meta-value">URJC Madrid</span>
           </div>
         </motion.div>
@@ -129,10 +151,10 @@ const Coleccion3DPage = () => {
           viewport={{ once: true, margin: '50px' }}
           transition={{ duration: 0.5 }}
         >
-          Selecciona un modelo
+          {t('project_select_model')}
         </motion.p>
         <div className="c3d-strip__grid">
-          {modelos3d.map((m, i) => (
+          {displayModels.map((m, i) => (
             <motion.button
               key={i}
               className={`c3d-strip__card${i === activeModel ? ' c3d-strip__card--active' : ''}`}
@@ -230,11 +252,11 @@ const Coleccion3DPage = () => {
               <motion.span
                 className="c3d-main__palette-swatch"
                 style={{ background: model.accent }}
-                initial={{ scale: 0 }}
+                initial={{ scale: 0.5 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 260, damping: 16, delay: 0.32 }}
               />
-              <span className="c3d-main__palette-label">Color de colección</span>
+              <span className="c3d-main__palette-label">{t('c3d_color_label')}</span>
             </motion.div>
 
             {/* Navegación entre modelos */}
@@ -242,11 +264,11 @@ const Coleccion3DPage = () => {
               <motion.button
                 className="c3d-main__model-btn"
                 onClick={() => setActiveModel((activeModel - 1 + modelos3d.length) % modelos3d.length)}
-                aria-label="Modelo anterior"
+                aria-label={t('c3d_prev_model_aria')}
                 whileHover={{ x: -4 }}
                 whileTap={{ scale: 0.95 }}
               >
-                ← Anterior
+                {t('project_prev')}
               </motion.button>
               <span className="c3d-main__model-progress">
                 {String(activeModel + 1).padStart(2,'0')} / {String(modelos3d.length).padStart(2,'0')}
@@ -254,11 +276,11 @@ const Coleccion3DPage = () => {
               <motion.button
                 className="c3d-main__model-btn"
                 onClick={() => setActiveModel((activeModel + 1) % modelos3d.length)}
-                aria-label="Modelo siguiente"
+                aria-label={t('c3d_next_model_aria')}
                 whileHover={{ x: 4 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Siguiente →
+                {t('project_next')}
               </motion.button>
             </div>
           </div>
@@ -273,13 +295,13 @@ const Coleccion3DPage = () => {
               to={prevProject.id.startsWith('__') ? '/coleccion-3d' : `/proyecto/${prevProject.id}`}
               className="project-nav__link"
             >
-              <span className="project-nav__dir">← Anterior</span>
-              <span className="project-nav__name">{prevProject.title}</span>
+              <span className="project-nav__dir">{t('project_prev')}</span>
+              <span className="project-nav__name">{prevTitle}</span>
             </Link>
           ) : <div />}
         </div>
         <Link to="/" className="project-nav__back animate-on-scroll reveal-up reveal-near">
-          <span>Ver todos los proyectos</span>
+          <span>{t('project_view_all')}</span>
         </Link>
         <div className="project-nav__side project-nav__side--next animate-on-scroll reveal-up reveal-near">
           {nextProject ? (
@@ -287,8 +309,8 @@ const Coleccion3DPage = () => {
               to={nextProject.id.startsWith('__') ? '/coleccion-3d' : `/proyecto/${nextProject.id}`}
               className="project-nav__link project-nav__link--right"
             >
-              <span className="project-nav__dir">Siguiente →</span>
-              <span className="project-nav__name">{nextProject.title}</span>
+              <span className="project-nav__dir">{t('project_next')}</span>
+              <span className="project-nav__name">{nextTitle}</span>
             </Link>
           ) : <div />}
         </div>
@@ -296,7 +318,7 @@ const Coleccion3DPage = () => {
 
       {/* ── Footer ── */}
       <footer className="footer animate-on-scroll reveal-up reveal-near reveal-fast">
-        <span className="footer__copy">© 2026 Aitana Núñez</span>
+        <span className="footer__copy">{t('footer_copy')}</span>
         <span className="footer__name">AN Studio</span>
         <nav className="footer__social">
           <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">IG</a>

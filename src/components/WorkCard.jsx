@@ -11,9 +11,7 @@ const WorkCard = ({ id, number, category, title, image, variant = '', wide = fal
     variant ? `work-card--${variant}` : '',
   ].filter(Boolean).join(' ');
 
-  const href = id === '__process__'
-    ? '/proceso-clo3d'
-    : id === '__coleccion3d__'
+  const href = id === '__coleccion3d__'
     ? '/coleccion-3d'
     : `/proyecto/${id}`;
 

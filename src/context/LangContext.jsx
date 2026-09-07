@@ -15,9 +15,10 @@ export const LangProvider = ({ children }) => {
 
   const t = (key) => translations[lang]?.[key] ?? translations['es']?.[key] ?? key;
   const tp = (projectId) => translations[lang]?.projects?.[projectId] ?? translations['es']?.projects?.[projectId] ?? {};
+  const tc = (collabId) => translations[lang]?.collaborations?.[collabId] ?? translations['es']?.collaborations?.[collabId] ?? {};
 
   return (
-    <LangContext.Provider value={{ lang, setLanguage, t, tp }}>
+    <LangContext.Provider value={{ lang, setLanguage, t, tp, tc }}>
       {children}
     </LangContext.Provider>
   );

@@ -42,7 +42,10 @@
   --bone-700: #5e594f;
 
   /* Rampa de oro. El 400 es el dorado de marca ya establecido; los
-     tonos oscuros existen para que el modo claro tenga contraste. */
+     tonos oscuros existen para que el modo claro tenga contraste.
+     Sólo vale para el modo oscuro (por defecto): el modo claro pisa
+     --color-gold con un plateado frío propio, no con esta rampa —
+     ver el bloque [data-theme="light"] más abajo. */
   --gold-200: #e4d2a9;
   --gold-300: #d9be87;
   --gold-400: #c9a96e;
@@ -217,12 +220,14 @@
   --color-text-subtle:   #6e6558;   /* ~4.9:1 */
   --color-text-ghost:    rgba(28, 23, 16, 0.07);
 
-  /* El oro se oscurece: el de marca (#c9a96e) sobre hueso da ~1.9:1
-     y sería ilegible. El 600 llega a 4.6:1; si algún rótulo pequeño
-     se queda corto, --gold-700 (6.4:1) está en la rampa. */
-  --color-gold:          var(--gold-600);
-  --color-gold-dim:      rgba(138, 98, 36, 0.45);
-  --color-gold-bg:       rgba(138, 98, 36, 0.10);
+  /* El acento cambia de familia sólo aquí: en oscuro sigue siendo el
+     oro de marca (--gold-*), pero en claro pasa a un plateado/acero
+     frío propio de este tema — valores sueltos, no la rampa --gold-*,
+     que en oscuro se queda cálida. #536371 sobre hueso da ~5.4:1; el
+     tono de foco (#3c4952, más oscuro) llega a ~8.7:1. */
+  --color-gold:          #536371;
+  --color-gold-dim:      rgba(83, 99, 113, 0.45);
+  --color-gold-bg:       rgba(83, 99, 113, 0.10);
   --color-on-gold:       #f7f3eb;
 
   --color-border:        rgba(28, 23, 16, 0.16);
@@ -230,15 +235,15 @@
   --color-border-strong: rgba(28, 23, 16, 0.28);
 
   --color-overlay:       rgba(242, 237, 228, 0.92);
-  --color-focus:         var(--gold-700);
+  --color-focus:         #3c4952;
 
   --shadow-card:  0 24px 48px rgba(28, 23, 16, 0.16);
 
   /* --color-on-image, --color-scrim y las duraciones no se tocan:
      el texto sobre fotografía se lee claro en los dos temas. */
 
-  --color-scrollbar-thumb:       rgba(138, 98, 36, 0.4);
-  --color-scrollbar-thumb-hover: rgba(138, 98, 36, 0.65);
+  --color-scrollbar-thumb:       rgba(83, 99, 113, 0.4);
+  --color-scrollbar-thumb-hover: rgba(83, 99, 113, 0.65);
 }
 
 html {
@@ -379,13 +384,15 @@ button { cursor: pointer; font-family: var(--font-body); }
   background: transparent;
   transition: background var(--dur-base) var(--ease-out),
               border-color var(--dur-base) var(--ease-out),
-              color var(--dur-base) var(--ease-out);
+              color var(--dur-base) var(--ease-out),
+              transform var(--dur-fast) var(--ease-out);
 }
 .btn:hover {
   background: var(--color-gold-bg);
   border-color: var(--color-gold);
   color: var(--color-gold);
 }
+.btn:active { transform: scale(0.97); }
 
 /* Variante llena: la acción principal de cada sección */
 .btn--gold {
@@ -413,17 +420,6 @@ button { cursor: pointer; font-family: var(--font-body); }
   background: var(--color-bg);
   transition: box-shadow var(--dur-slow) var(--ease-out);
 }
-/* El hilván como pseudo: un borde no admite background-image. */
-.navbar::after {
-  content: '';
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: 1px;
-  background-image: var(--rule-baste);
-  opacity: 0.7;
-  transition: opacity var(--dur-slow) var(--ease-out);
-}
-.navbar--scrolled::after { opacity: 1; }
 
 .navbar__brand {
   display: flex;
@@ -486,8 +482,10 @@ button { cursor: pointer; font-family: var(--font-body); }
   letter-spacing: var(--tracking-wide);
   cursor: pointer;
   position: relative;
-  transition: color var(--dur-fast) var(--ease-out);
+  transition: color var(--dur-fast) var(--ease-out),
+              transform var(--dur-fast) var(--ease-out);
 }
+.lang-switcher__btn:active { transform: scale(0.9); }
 .lang-switcher__btn::after {
   content: '';
   position: absolute;
@@ -516,13 +514,15 @@ button { cursor: pointer; font-family: var(--font-body); }
   color: var(--color-text-muted);
   transition: border-color var(--dur-base) var(--ease-out),
               color var(--dur-base) var(--ease-out),
-              background var(--dur-base) var(--ease-out);
+              background var(--dur-base) var(--ease-out),
+              transform var(--dur-fast) var(--ease-out);
 }
 .navbar__theme-toggle:hover {
   border-color: var(--color-gold-dim);
   color: var(--color-gold);
   background: var(--color-gold-bg);
 }
+.navbar__theme-toggle:active { transform: scale(0.92); }
 .navbar__theme-toggle svg {
   transition: transform var(--dur-slow) cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -545,6 +545,8 @@ button { cursor: pointer; font-family: var(--font-body); }
   background: transparent;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
+  transition: border-color var(--dur-base) var(--ease-out),
+              transform var(--dur-fast) var(--ease-out);
 }
 .navbar__menu-baste {
   display: block;
@@ -554,7 +556,7 @@ button { cursor: pointer; font-family: var(--font-body); }
   /* El hilván se dibuja con --color-border-strong; aquí interesa
      que se lea como trazo, no como borde. */
   filter: none;
-  transition: transform var(--dur-slow) var(--ease-soft),
+  transition: transform var(--dur-base) var(--ease-soft),
               opacity var(--dur-fast) var(--ease-out);
 }
 .navbar__menu-toggle--open .navbar__menu-baste:first-child {
@@ -564,6 +566,7 @@ button { cursor: pointer; font-family: var(--font-body); }
   transform: translateY(-3.5px) rotate(-45deg);
 }
 .navbar__menu-toggle:hover { border-color: var(--color-gold-dim); }
+.navbar__menu-toggle:active { transform: scale(0.9); }
 
 /* ─── Panel de navegación móvil ──────────────────────────────────
    Ocupa la pantalla bajo el navbar. Los enlaces entran escalonados
@@ -630,7 +633,9 @@ button { cursor: pointer; font-family: var(--font-body); }
   gap: var(--space-md);
   padding: var(--space-md) 0;
   min-height: 44px;
+  transition: opacity var(--dur-fast) var(--ease-out);
 }
+.nav-panel__link:active { opacity: 0.6; }
 .nav-panel__index {
   font-size: var(--text-2xs);
   letter-spacing: var(--tracking-label);
@@ -657,7 +662,10 @@ button { cursor: pointer; font-family: var(--font-body); }
   font-style: italic;
   letter-spacing: var(--tracking-wide);
   color: var(--color-text-muted);
+  transition: color var(--dur-base) var(--ease-out);
 }
+.nav-panel__email:hover,
+.nav-panel__email:active { color: var(--color-gold); }
 
 /* Por debajo de 768px las secciones dejan el navbar y pasan al panel */
 @media (max-width: 768px) {
@@ -890,7 +898,9 @@ body.site-loaded .hero-word {
 
 /* La cinta se detiene al pasar por encima: si algo se mueve sin parar
    y lleva texto, hay que poder leerlo. */
-.ticker:hover .ticker__track { animation-play-state: paused; }
+@media (hover: hover) and (pointer: fine) {
+  .ticker:hover .ticker__track { animation-play-state: paused; }
+}
 
 /* ─── Works ───────────────────────────────────────────────────────
    Cabecera de sección: rótulo a la izquierda, recuento a la derecha,
@@ -965,7 +975,9 @@ body.site-loaded .hero-word {
   cursor: pointer;
   text-decoration: none;
   height: 100%;
+  transition: transform var(--dur-fast) var(--ease-out);
 }
+.work-card:active { transform: scale(0.98); }
 .work-card--wide { grid-column: span 2; }
 
 /* Wrap contenedor de imagen — ocupa el 100% de la fila */
@@ -1171,7 +1183,7 @@ body.site-loaded .hero-word {
   color: var(--color-gold);
   margin-bottom: var(--space-lg);
 }
-/* La cita es la voz de la diseñadora: es lo que más pesa del bloque. */
+/* La cita es la divisa del bloque: es lo que más pesa. */
 .about__quote {
   font-family: var(--font-display);
   font-size: var(--text-xl);
@@ -1181,6 +1193,20 @@ body.site-loaded .hero-word {
   color: var(--color-text);
   margin-bottom: var(--space-lg);
   max-width: 22ch;
+}
+/* La firma se mantiene en voz baja: si repitiera el dorado en versales
+   anchas del `.about__label` de arriba, la cita quedaría emparedada entre
+   dos etiquetas iguales y perdería el peso que le toca. */
+.about__quote-author {
+  display: block;
+  margin-top: var(--space-md);
+  font-family: var(--font-body);
+  font-size: var(--text-2xs);
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
 }
 .about__body {
   font-size: var(--text-base);
@@ -1218,23 +1244,31 @@ body.site-loaded .hero-word {
   font-style: italic;
   color: var(--color-text-subtle);
   letter-spacing: var(--tracking-wide);
-  transition: color var(--dur-base);
+  transition: color var(--dur-base) var(--ease-out);
   cursor: default;
 }
 .clients__item:hover { color: var(--color-on-image-muted); }
 
 /* ─── Collaborations (home) ─── */
+/* El resto del sitio cierra cada sección con el hilván (--rule-baste);
+   aquí se había colado un borde sólido corriente. --space-section y
+   --space-gutter ya son fluidos por clamp(), así que el padding fijo
+   a 900px sobraba y encima usaba un punto de corte que no es de los
+   tres del sitio (1024/768/480). */
 .collabs {
   padding: var(--space-section) var(--space-gutter);
-  border-bottom: 1px solid var(--color-border);
+  position: relative;
+}
+.collabs::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 1px;
+  background-image: var(--rule-baste);
 }
 @keyframes collabs-progress {
   from { width: 0%; }
   to   { width: 100%; }
-}
-
-@media (max-width: 900px) {
-  .collabs { padding: 60px 24px; }
 }
 
 /* ─── Contact ─── */
@@ -1290,9 +1324,11 @@ body.site-loaded .hero-word {
   margin: var(--space-lg) 0 var(--space-xl);
   border-bottom: 1px solid var(--color-gold-dim);
   padding-bottom: var(--space-3xs);
-  transition: border-color var(--dur-base) var(--ease-out);
+  transition: border-color var(--dur-base) var(--ease-out),
+              transform var(--dur-fast) var(--ease-out);
 }
 .contact__email:hover { border-color: var(--color-gold); }
+.contact__email:active { transform: scale(0.97); }
 .contact__actions {
   display: flex;
   gap: var(--space-sm);
@@ -1346,9 +1382,11 @@ body.site-loaded .hero-word {
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--color-text-subtle);
-  transition: color var(--dur-base) var(--ease-out);
+  transition: color var(--dur-base) var(--ease-out),
+              transform var(--dur-fast) var(--ease-out);
 }
 .footer__social a:hover { color: var(--color-gold); }
+.footer__social a:active { transform: scale(0.9); }
 
 /* ─── Tope de ancho ───────────────────────────────────────────────
    Por encima de 1440px el sitio deja de estirarse y se centra. Sin
@@ -1360,7 +1398,8 @@ body.site-loaded .hero-word {
 .about,
 .collabs,
 .contact,
-.footer {
+.footer,
+.study-chapters {
   max-width: var(--max-content);
   margin-inline: auto;
 }
@@ -1979,6 +2018,378 @@ body:not(.cursor--active) .cursor-ring {
   .hero__editorial-name    { font-size: var(--text-lg); }
   .about__stat-num         { font-size: var(--text-xl); }
   .cursor-mark, .cursor-ring { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════
+   STUDY CHAPTERS — trayectoria académica
+   ───────────────────────────────────────────────────
+   Cada titulación es una tarjeta que se voltea: delante, lo esencial
+   (curso y titulación, con el año de fondo a modo de sello); detrás,
+   el resto de la ficha (centro y distinción, cuando los hay). Un
+   tap/clic la voltea — igual que las tarjetas de reconocimiento, sin
+   depender de hover, que en táctil no existe.
+   ═══════════════════════════════════════════════════ */
+
+.study-chapters {
+  padding: var(--space-lg) var(--space-gutter) var(--space-4xl);
+}
+
+/* Mismo hilván que cierra la cabecera de Works (rótulo + línea de
+   puntos debajo): el rótulo de esta sección hace de título por sí
+   solo, así que lleva la misma firma que el resto de cabeceras. */
+.study-chapters__head {
+  position: relative;
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+}
+.study-chapters__head::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 1px;
+  background-image: var(--rule-baste);
+}
+
+.study-chapters__label {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--color-gold);
+  font-weight: 500;
+}
+
+.study-chapters__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: stretch;
+  gap: var(--space-lg);
+  position: relative;
+}
+
+.study-chapter { position: relative; }
+
+/* Reset de botón sin tocar `outline`: la marca de foco global tiene
+   que seguir funcionando para quien navega con teclado. */
+.study-chapter__flip {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  perspective: 1600px;
+  border-radius: var(--radius-lg);
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+/* Se eleva al pasar el ratón, igual que las tarjetas de Reconocimientos:
+   la tarjeta responde antes de que se llegue a tocar/clicar para voltearla. */
+.study-chapter__flip:hover { transform: translateY(-6px); }
+
+/* Grid en superposición, no `position: absolute`: la titulación más
+   larga (hay alguna de más de 90 caracteres, y el francés/italiano
+   estiran aún más) tiene que poder crecer en alto. Con `inset: 0`
+   habría que adivinar una altura fija y algún idioma la recortaría;
+   así la tarjeta mide lo que pida la cara más alta de las dos —
+   y con las tres tarjetas en fila, `height: 100%` + `grid-template-
+   -rows: 1fr` hace que las tres igualen su alto al de esa cara. */
+/* El fondo lo pone `--chapter-bg`, uno por etapa (JSX) — la misma
+   idea que las portadas de proyecto: un tono fijo, no un token de
+   tema, así que todo lo que va encima usa los tokens "on-image" y se
+   lee igual en modo claro y oscuro. Ya no es una superficie neutra
+   más del sitio: es la pieza de tela de esa etapa. */
+.study-chapter__flip-inner {
+  display: grid;
+  grid-template-rows: 1fr;
+  height: 100%;
+  border: 1px solid var(--color-border-on-image);
+  border-radius: var(--radius-lg);
+  background: var(--chapter-bg, var(--ink-850));
+  transform-style: preserve-3d;
+  transition: transform 620ms var(--ease-inout),
+              border-color var(--dur-base) var(--ease-out),
+              box-shadow var(--dur-slow) var(--ease-out);
+}
+.study-chapter__flip:hover .study-chapter__flip-inner {
+  border-color: var(--gold-300);
+  box-shadow: var(--shadow-card);
+}
+.study-chapter__flip-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.study-chapter__face {
+  position: relative;
+  grid-row: 1;
+  grid-column: 1;
+  min-height: 220px;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl) var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  backface-visibility: hidden;
+}
+.study-chapter__face--back {
+  transform: rotateY(180deg);
+}
+
+/* El destello: un brillo que atraviesa la tela una sola vez al
+   aparecer la tarjeta, como si cogiera la luz — la misma idea que el
+   brillo de la insignia de honor, a escala de tarjeta entera y sin
+   repetirse en bucle, que en una pieza tan grande cansaría. */
+.study-chapter__face--front::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.16) 50%, transparent 62%);
+  background-size: 240% 100%;
+  background-position: 160% 0;
+  pointer-events: none;
+}
+.reveal-ready .study-chapter.is-visible .study-chapter__face--front::after {
+  animation: study-honor-shine 1600ms ease-out 500ms 1 both;
+}
+
+/* Capítulos pares/impares alternan también el texto, no sólo el
+   número de fondo — el mismo vaivén izquierda/derecha del diseño
+   anterior a sangre, ahora dentro de la tarjeta. */
+.study-chapter--alt .study-chapter__face {
+  align-items: flex-end;
+  text-align: right;
+}
+.study-chapter--alt .study-chapter__honor,
+.study-chapter--alt .study-chapter__school-row,
+.study-chapter--alt .study-chapter__flip-cue {
+  flex-direction: row-reverse;
+}
+
+/* El número de etapa, a sangre y a lo grande: sustituye al año en
+   pequeño de antes — es más gráfico y no repite el dato que ya da el
+   propio orden de las tarjetas en la fila. */
+.study-chapter__ghost {
+  position: absolute;
+  right: -0.06em;
+  bottom: -0.14em;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(4.5rem, 9vw, 7.5rem);
+  line-height: 1;
+  color: var(--color-ghost-on-image);
+  white-space: nowrap;
+  letter-spacing: var(--tracking-tight);
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+  pointer-events: none;
+  z-index: 0;
+  transition: color var(--dur-slow) var(--ease-out);
+}
+
+/* Capítulos pares/impares alternan el lado del número de fondo — el
+   mismo vaivén izquierda/derecha que tenía el diseño anterior a
+   sangre, ahora aplicado sólo a este elemento decorativo. */
+.study-chapter--alt .study-chapter__ghost {
+  right: auto;
+  left: -0.06em;
+}
+
+/* Al pasar el ratón, el número de fondo se aclara, como si el
+   capítulo cobrara foco. */
+.study-chapter__flip:hover .study-chapter__ghost {
+  color: rgba(201, 169, 110, 0.4);
+}
+
+.study-chapter__period {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-style: italic;
+  font-size: var(--text-md);
+  color: var(--gold-300);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--leading-none);
+  margin-bottom: var(--space-xs);
+}
+
+.study-chapter__degree {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: var(--text-lg);
+  line-height: var(--leading-tight);
+  color: var(--color-on-image);
+  /* Sin ch fijos: la propia tarjeta —una de tres en fila— ya acota
+     el ancho; un tope en caracteres quedaba corto en unas columnas y
+     sobraba en otras según el idioma. */
+  max-width: 100%;
+}
+
+/* Fila del centro de estudios: mismo emparejado icono + texto que el
+   premio, para que las dos filas de detalle de la trasera se lean del
+   mismo modo de un vistazo, no una en prosa y otra en insignia. */
+.study-chapter__school-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  margin-bottom: var(--space-2xs);
+}
+
+.study-chapter__school-icon {
+  flex: none;
+  width: 18px;
+  height: 14px;
+  color: var(--gold-300);
+}
+
+.study-chapter__school {
+  font-size: var(--text-sm);
+  color: var(--color-on-image-muted);
+}
+
+.study-chapter__back-label {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--gold-300);
+  margin-bottom: var(--space-sm);
+}
+
+.study-chapter__desc {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  color: var(--color-on-image-muted);
+  margin-bottom: var(--space-md);
+}
+
+/* La pista de que la ficha se voltea: icono + texto, y se enciende en
+   dorado al pasar el ratón — la misma señal que ya da el borde de la
+   tarjeta, repetida aquí para que quede claro que es lo que responde. */
+.study-chapter__flip-cue {
+  margin-top: auto;
+  padding-top: var(--space-md);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3xs);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-on-image-muted);
+  transition: color var(--dur-base) var(--ease-out);
+}
+
+.study-chapter__flip-icon {
+  flex: none;
+  width: 13px;
+  height: 13px;
+}
+
+.study-chapter__flip:hover .study-chapter__flip-cue {
+  color: var(--gold-300);
+}
+
+/* ── El premio: la pieza que más debe llamar la atención ──────────
+   Insignia con laurel, no una etiqueta más: fondo en degradado dorado,
+   entrada con rebote y un brillo que la recorre, como una condecoración
+   real prendiendo la luz. */
+.study-chapter__honor {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  margin-top: var(--space-md);
+  padding: var(--space-2xs) var(--space-sm);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gold-dim);
+  background: linear-gradient(135deg, var(--color-gold-bg), rgba(201, 169, 110, 0.2));
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+}
+
+.study-chapter__honor-icon {
+  flex: none;
+  width: 20px;
+  height: 16px;
+  color: var(--color-gold);
+}
+
+.study-chapter__honor-text {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-gold);
+  text-align: left;
+}
+.study-chapter--alt .study-chapter__honor-text { text-align: right; }
+
+/* El brillo: una franja clara que atraviesa la insignia en diagonal */
+.study-chapter__honor::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.55) 50%, transparent 60%);
+  background-size: 220% 100%;
+  background-position: 150% 0;
+  pointer-events: none;
+}
+
+.reveal-ready .study-chapter.is-visible .study-chapter__honor {
+  animation: study-honor-pop 700ms cubic-bezier(0.34, 1.56, 0.64, 1) 420ms both;
+}
+.reveal-ready .study-chapter.is-visible .study-chapter__honor::after {
+  animation: study-honor-shine 2800ms ease-in-out 1400ms infinite;
+}
+
+@keyframes study-honor-pop {
+  0%   { opacity: 0; transform: scale(0.4) rotate(-8deg); }
+  70%  { opacity: 1; transform: scale(1.08) rotate(1deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+@keyframes study-honor-shine {
+  0%, 30%  { background-position: 150% 0; }
+  60%, 100% { background-position: -50% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .study-chapter__ghost { transition: none; }
+  .study-chapter__flip { transition: none; }
+  .study-chapter__flip-inner { transition: border-color var(--dur-base) var(--ease-out), box-shadow var(--dur-slow) var(--ease-out); }
+  .reveal-ready .study-chapter.is-visible .study-chapter__honor {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .reveal-ready .study-chapter.is-visible .study-chapter__honor::after,
+  .reveal-ready .study-chapter.is-visible .study-chapter__face--front::after {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .study-chapters__grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .study-chapters { padding: var(--space-xl) 20px var(--space-2xl); }
+  .study-chapter__face { padding: var(--space-xl) var(--space-lg); }
+  .study-chapter--alt .study-chapter__face {
+    align-items: flex-start;
+    text-align: left;
+  }
+  .study-chapter--alt .study-chapter__honor,
+  .study-chapter--alt .study-chapter__school-row,
+  .study-chapter--alt .study-chapter__flip-cue { flex-direction: row; }
+  .study-chapter--alt .study-chapter__honor-text { text-align: left; }
+  .study-chapter--alt .study-chapter__ghost { right: -0.06em; left: auto; }
 }
 
 /* ═══════════════════════════════════════════════════════════════

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useLang } from '../context/LangContext';
 
 /**
  * Lightbox — visor de imágenes a pantalla completa con navegación
@@ -11,6 +12,7 @@ import { useEffect } from 'react';
  * onNavigate: (nuevoIndice) => void
  */
 const Lightbox = ({ images, index, onClose, onNavigate, title }) => {
+  const { t } = useLang();
   const isOpen = index !== null && index !== undefined;
 
   useEffect(() => {
@@ -36,7 +38,7 @@ const Lightbox = ({ images, index, onClose, onNavigate, title }) => {
 
   return (
     <div className="lightbox" onClick={onClose} role="dialog" aria-modal="true">
-      <button className="lightbox__close" onClick={onClose} aria-label="Cerrar">
+      <button className="lightbox__close" onClick={onClose} aria-label={t('lightbox_close_aria')}>
         ✕
       </button>
 
@@ -44,21 +46,21 @@ const Lightbox = ({ images, index, onClose, onNavigate, title }) => {
         <button
           className="lightbox__nav lightbox__nav--prev"
           onClick={(e) => { e.stopPropagation(); onNavigate((index - 1 + images.length) % images.length); }}
-          aria-label="Imagen anterior"
+          aria-label={t('lightbox_prev_aria')}
         >
           ←
         </button>
       )}
 
       <figure className="lightbox__figure" onClick={(e) => e.stopPropagation()}>
-        <img src={images[index]} alt={`${title ? title + ' — ' : ''}${index + 1} de ${images.length}`} className="lightbox__img" />
+        <img src={images[index]} alt={`${title ? title + ' — ' : ''}${index + 1} ${t('lightbox_of')} ${images.length}`} className="lightbox__img" />
       </figure>
 
       {images.length > 1 && (
         <button
           className="lightbox__nav lightbox__nav--next"
           onClick={(e) => { e.stopPropagation(); onNavigate((index + 1) % images.length); }}
-          aria-label="Imagen siguiente"
+          aria-label={t('lightbox_next_aria')}
         >
           →
         </button>

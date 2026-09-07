@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useLang } from '../context/LangContext';
 import './CardCoverFlow.css';
 
 /**
@@ -12,6 +13,7 @@ import './CardCoverFlow.css';
  * no haciendo clic — los botones ← → y los puntos siguen siendo clic.
  */
 export default function CardCoverFlow({ className = '', images, activeIndex, onChange }) {
+  const { t } = useLang();
   const toPrev = (e) => {
     e.stopPropagation();
     onChange(Math.max(0, activeIndex - 1));
@@ -71,7 +73,7 @@ export default function CardCoverFlow({ className = '', images, activeIndex, onC
       </div>
 
       <div className="coverflow__controls">
-        <button onClick={toPrev} className="coverflow__arrow" aria-label="Anterior">
+        <button onClick={toPrev} className="coverflow__arrow" aria-label={t('carousel_prev_aria')}>
           <ChevronLeft size={22} />
         </button>
         <div className="coverflow__dots">
@@ -84,7 +86,7 @@ export default function CardCoverFlow({ className = '', images, activeIndex, onC
             />
           ))}
         </div>
-        <button onClick={toNext} className="coverflow__arrow" aria-label="Siguiente">
+        <button onClick={toNext} className="coverflow__arrow" aria-label={t('carousel_next_aria')}>
           <ChevronRight size={22} />
         </button>
       </div>

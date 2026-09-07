@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import PROJECTS from '../data/projects';
+import { useLang } from '../context/LangContext';
 import './RouteTransition.css';
 
 /* Duración del barrido de subida del telón. El intercambio de ruta
@@ -9,15 +10,16 @@ import './RouteTransition.css';
 const COVER_MS = 560;
 
 /* Rótulo que se muestra sobre el telón según la ruta de destino. */
-const labelFor = (pathname) => {
+const labelFor = (pathname, t, tp) => {
   if (pathname === '/')               return 'Aitana Núñez';
-  if (pathname === '/coleccion-3d')   return 'Colección 3D';
-  if (pathname === '/proceso-clo3d')  return 'Proceso CLO 3D';
+  if (pathname === '/coleccion-3d')   return tp('__coleccion3d__').title || 'Colección 3D';
+  if (pathname === '/proceso-clo3d')  return t('route_transition_process');
+  if (pathname === '/mis-estudios')   return t('route_transition_studies');
 
   const match = pathname.match(/^\/proyecto\/(.+)$/);
   if (match) {
     const project = PROJECTS.find(p => p.id === match[1]);
-    if (project) return project.title;
+    if (project) return tp(project.id).title || project.title;
   }
   return 'Aitana Núñez';
 };
@@ -38,11 +40,26 @@ const labelFor = (pathname) => {
 const RouteTransition = ({ children }) => {
   const location = useLocation();
   const reduceMotion = useReducedMotion();
+  const { t, tp } = useLang();
 
   // Ubicación realmente pintada: va por detrás de `location` mientras cubre.
   const [shown, setShown]       = useState(location);
   const [covering, setCovering] = useState(false);
   const isFirstRender           = useRef(true);
+
+  // Si el destino lleva ancla (#about, #timeline…), hay que ir a esa
+  // sección en vez de al principio: antes esto se ignoraba y cualquier
+  // enlace a una sección con cambio de ruta te dejaba en la cabecera.
+  const scrollToTarget = (smooth) => {
+    if (location.hash) {
+      const el = document.getElementById(location.hash.slice(1));
+      if (el) {
+        el.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto' });
+        return;
+      }
+    }
+    window.scrollTo(0, 0);
+  };
 
   useEffect(() => {
     // La carga inicial ya la cubre PageLoaderOverlay: no duplicamos telón.
@@ -50,19 +67,25 @@ const RouteTransition = ({ children }) => {
       isFirstRender.current = false;
       return;
     }
-    if (location.pathname === shown.pathname) return;
+
+    // Misma página, sólo cambia el ancla: sin telón, scroll suave.
+    if (location.pathname === shown.pathname) {
+      setShown(location);
+      scrollToTarget(true);
+      return;
+    }
 
     // Sin movimiento: cambio inmediato, sin telón.
     if (reduceMotion) {
       setShown(location);
-      window.scrollTo(0, 0);
+      scrollToTarget(false);
       return;
     }
 
     setCovering(true);
     const timer = setTimeout(() => {
       setShown(location);
-      window.scrollTo(0, 0);
+      scrollToTarget(false);
       setCovering(false);
     }, COVER_MS);
     return () => clearTimeout(timer);
@@ -101,7 +124,7 @@ const RouteTransition = ({ children }) => {
               animate={{ opacity: 1, transition: { delay: 0.22, duration: 0.28 } }}
               exit={{ opacity: 0, transition: { duration: 0.16 } }}
             >
-              {labelFor(location.pathname)}
+              {labelFor(location.pathname, t, tp)}
             </motion.span>
           </motion.div>
         )}

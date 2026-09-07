@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import COLLABORATIONS from '../data/collaborations';
+import { useLang } from '../context/LangContext';
 import './CollabCarousel.css';
 
 /**
@@ -10,6 +11,7 @@ import './CollabCarousel.css';
  * desenfocadas y una "de atrás" detrás, todo con transición 650ms.
  */
 const CollabCarousel = () => {
+  const { t, tc } = useLang();
   const total = COLLABORATIONS.length;
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -67,6 +69,8 @@ const CollabCarousel = () => {
   };
 
   const current = COLLABORATIONS[center];
+  const currentTr = tc(current.id);
+  const displayDescription = currentTr.description || current.description;
 
   return (
     <div className="collab-carousel">
@@ -95,12 +99,12 @@ const CollabCarousel = () => {
         {/* Texto + navegación inferior izquierda */}
         <div className="collab-carousel__info">
           <p className="collab-carousel__brand">{current.brand}</p>
-          <p className="collab-carousel__desc">{current.description}</p>
+          <p className="collab-carousel__desc">{displayDescription}</p>
           <div className="collab-carousel__nav">
-            <button onClick={() => navigate('prev')} aria-label="Anterior" disabled={isAnimating}>
+            <button onClick={() => navigate('prev')} aria-label={t('carousel_prev_aria')} disabled={isAnimating}>
               <ArrowLeft size={22} strokeWidth={2.25} />
             </button>
-            <button onClick={() => navigate('next')} aria-label="Siguiente" disabled={isAnimating}>
+            <button onClick={() => navigate('next')} aria-label={t('carousel_next_aria')} disabled={isAnimating}>
               <ArrowRight size={22} strokeWidth={2.25} />
             </button>
           </div>

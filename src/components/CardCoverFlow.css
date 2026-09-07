@@ -47,7 +47,7 @@
   left: -20px;
   right: -20px;
   text-align: center;
-  font-size: 13px;
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--color-on-image);
   white-space: nowrap;
@@ -57,12 +57,12 @@
 
 /* ── Barra de navegación (flechas + puntos), más grande ── */
 .coverflow__controls {
-  margin: 24px 0 0;
+  margin: var(--space-md) 0 0;
   width: 100%;
-  padding: 5px 24px;
+  padding: var(--space-3xs) var(--space-md);
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: var(--space-sm);
   justify-content: space-between;
   color: var(--color-on-image-muted);
   border-radius: 0;
@@ -74,39 +74,47 @@
 }
 
 .coverflow__arrow {
-  padding: 6px;
+  padding: var(--space-2xs);
   cursor: pointer;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   border: 0;
   background: transparent;
   color: var(--color-on-image-muted);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background var(--dur-base) ease, color var(--dur-base) ease,
+              transform var(--dur-fast) var(--ease-out);
 }
 .coverflow__arrow:hover {
   background: var(--color-border-on-image);
-  color: var(--color-on-image);
+  /* En oro, como el resto de acentos que viven sobre fotografía. */
+  color: var(--gold-300);
 }
+.coverflow__arrow:active { transform: scale(0.88); }
 
 .coverflow__dots {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
+  gap: var(--space-2xs);
 }
 
 .coverflow__dot {
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   cursor: pointer;
   height: 9px;
   width: 9px;
   background: var(--color-border-on-image);
-  transition: all 0.3s ease;
+  transition: width var(--dur-slow) var(--ease-out),
+              background var(--dur-base) ease;
 }
 .coverflow__dot:hover { background: var(--color-on-image-muted); }
 .coverflow__dot--on {
   width: 30px;
-  background: var(--color-gold);
+  /* Antes --color-gold: correcto sobre fondo plano, pero pierde
+     contraste sobre foto. --gold-300 es el tono que ya usa el resto
+     de acentos en contextos on-image (etiqueta del héroe, número de
+     look, carrusel de colaboraciones). */
+  background: var(--gold-300);
 }

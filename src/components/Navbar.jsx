@@ -39,15 +39,15 @@ const ThemeIcon = ({ theme }) => (
   )
 );
 
-const LangSwitcher = ({ lang, setLanguage, className = '' }) => (
-  <div className={`lang-switcher ${className}`.trim()} role="group" aria-label="Idioma">
+const LangSwitcher = ({ lang, setLanguage, className = '', t }) => (
+  <div className={`lang-switcher ${className}`.trim()} role="group" aria-label={t('nav_lang_group_aria')}>
     {LANGS.map(({ code, label }) => (
       <button
         key={code}
         type="button"
         className={`lang-switcher__btn${lang === code ? ' lang-switcher__btn--active' : ''}`}
         onClick={() => setLanguage(code)}
-        aria-label={`Cambiar idioma a ${label}`}
+        aria-label={`${t('nav_lang_switch_aria')} ${label}`}
         aria-current={lang === code ? 'true' : undefined}
       >
         {label}
@@ -134,18 +134,18 @@ const Navbar = ({ variant = 'home' }) => {
 
         <ul className="navbar__links animate-on-scroll reveal-down reveal-near reveal-fast">
           {SECTIONS.map(({ id, key }) => (
-            <li key={id}><a href={href(id)}>{t(key)}</a></li>
+            <li key={id}><Link to={href(id)}>{t(key)}</Link></li>
           ))}
         </ul>
 
         <div className="navbar__controls animate-on-scroll reveal-down reveal-near reveal-fast">
-          <LangSwitcher lang={lang} setLanguage={setLanguage} className="lang-switcher--desktop" />
+          <LangSwitcher lang={lang} setLanguage={setLanguage} className="lang-switcher--desktop" t={t} />
 
           <button
             type="button"
             className="navbar__theme-toggle"
             onClick={toggle}
-            aria-label={theme === 'dark' ? 'Activar modo claro' : 'Activar modo oscuro'}
+            aria-label={theme === 'dark' ? t('nav_theme_light_aria') : t('nav_theme_dark_aria')}
           >
             <ThemeIcon theme={theme} />
           </button>
@@ -158,7 +158,7 @@ const Navbar = ({ variant = 'home' }) => {
             ref={toggleRef}
             className={`navbar__menu-toggle${open ? ' navbar__menu-toggle--open' : ''}`}
             onClick={() => (open ? close() : setOpen(true))}
-            aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
+            aria-label={open ? t('nav_menu_close_aria') : t('nav_menu_open_aria')}
             aria-expanded={open}
             aria-controls="nav-panel"
           >
@@ -179,16 +179,16 @@ const Navbar = ({ variant = 'home' }) => {
         <ul className="nav-panel__list">
           {SECTIONS.map(({ id, key }, i) => (
             <li key={id} className="nav-panel__item" style={{ '--i': i }}>
-              <a href={href(id)} className="nav-panel__link" onClick={() => setOpen(false)}>
+              <Link to={href(id)} className="nav-panel__link" onClick={() => setOpen(false)}>
                 <span className="nav-panel__index u-tabular">{String(i + 1).padStart(2, '0')}</span>
                 <span className="nav-panel__label">{t(key)}</span>
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
 
         <div className="nav-panel__foot">
-          <LangSwitcher lang={lang} setLanguage={setLanguage} />
+          <LangSwitcher lang={lang} setLanguage={setLanguage} t={t} />
           <a href="mailto:aitananr2@gmail.com" className="nav-panel__email">aitananr2@gmail.com</a>
         </div>
       </div>

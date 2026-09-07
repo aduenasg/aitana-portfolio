@@ -1,0 +1,84 @@
+/* DressLoader — minimalista y en los tonos propios del sitio (tinta,
+   hueso, oro): sin paleta nueva, sin interacción, sólo un trazo que se
+   dibuja y un nombre que se posa. */
+.dress-loader {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md, 24px);
+  transform: scale(1);
+}
+@media (min-width: 640px)  { .dress-loader { transform: scale(1.15); } }
+@media (min-width: 1024px) { .dress-loader { transform: scale(1.3); } }
+
+.dress-loader__svg { overflow: visible; }
+
+.dress-loader__silhouette {
+  stroke: var(--color-gold);
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  fill: var(--color-gold);
+  fill-opacity: 0;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation:
+    dress-loader-draw 1300ms cubic-bezier(0.65, 0, 0.35, 1) forwards,
+    dress-loader-fill 700ms ease-out 1250ms forwards;
+}
+.dress-loader__silhouette--skirt { animation-delay: 160ms, 1250ms; }
+
+.dress-loader__seam {
+  stroke: var(--color-gold);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0.75;
+  animation: dress-loader-draw 480ms ease-out 900ms forwards;
+}
+
+.dress-loader__brand {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: var(--text-lg);
+  color: var(--color-text);
+  letter-spacing: 0.5em;
+  opacity: 0;
+  animation: dress-loader-brand 900ms cubic-bezier(0.16, 1, 0.3, 1) 1350ms forwards;
+}
+
+.dress-loader__rule {
+  display: block;
+  width: 56px;
+  height: 1px;
+  background: var(--color-gold);
+  transform: scaleX(0);
+  animation: dress-loader-rule 600ms ease-out 2000ms forwards;
+}
+
+@keyframes dress-loader-draw { to { stroke-dashoffset: 0; } }
+@keyframes dress-loader-fill { to { fill-opacity: 0.07; } }
+@keyframes dress-loader-brand {
+  0%   { opacity: 0; letter-spacing: 0.5em;  transform: translateY(6px); }
+  100% { opacity: 1; letter-spacing: var(--tracking-eyebrow, 0.28em); transform: translateY(0); }
+}
+@keyframes dress-loader-rule { to { transform: scaleX(1); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .dress-loader__silhouette,
+  .dress-loader__seam {
+    animation: none;
+    stroke-dashoffset: 0;
+    fill-opacity: 0.07;
+  }
+  .dress-loader__brand {
+    animation: none;
+    opacity: 1;
+    letter-spacing: var(--tracking-eyebrow, 0.28em);
+    transform: none;
+  }
+  .dress-loader__rule { animation: none; transform: scaleX(1); }
+}

@@ -38,48 +38,48 @@ import HofburgFicha4 from '../img/hofburg-ficha4.jpg';
 import HofburgTextil1 from '../img/hofburg-textil1.jpg';
 import HofburgTextil2 from '../img/hofburg-textil2.jpg';
 
-import ColBlancFoto1  from '../img/col-blanco-foto1.png';
-import ColBlancFoto2  from '../img/col-blanco-foto2.png';
-import ColBlancFoto3  from '../img/col-blanco-foto3.png';
-import ColBlancFoto4  from '../img/col-blanco-foto4.png';
-import ColBlancFoto5  from '../img/col-blanco-foto5.png';
-import ColBlancFoto6  from '../img/col-blanco-foto6.png';
+import ColBlancFoto1  from '../img/col-blanco-foto1.jpg';
+import ColBlancFoto2  from '../img/col-blanco-foto2.jpg';
+import ColBlancFoto3  from '../img/col-blanco-foto3.jpg';
+import ColBlancFoto4  from '../img/col-blanco-foto4.jpg';
+import ColBlancFoto5  from '../img/col-blanco-foto5.jpg';
+import ColBlancFoto6  from '../img/col-blanco-foto6.jpg';
 
-import ColGranFoto1   from '../img/col-granate-foto1.png';
-import ColGranFoto2   from '../img/col-granate-foto2.png';
-import ColGranFoto3   from '../img/col-granate-foto3.png';
-import ColGranFoto4   from '../img/col-granate-foto4.png';
-import ColGranFoto5   from '../img/col-granate-foto5.png';
-import ColGranFoto6   from '../img/col-granate-foto6.png';
-import ColGranFoto7   from '../img/col-granate-foto7.png';
-import ColGranFoto8   from '../img/col-granate-foto8.png';
-import ColGranFoto9   from '../img/col-granate-foto9.png';
+import ColGranFoto1   from '../img/col-granate-foto1.jpg';
+import ColGranFoto2   from '../img/col-granate-foto2.jpg';
+import ColGranFoto3   from '../img/col-granate-foto3.jpg';
+import ColGranFoto4   from '../img/col-granate-foto4.jpg';
+import ColGranFoto5   from '../img/col-granate-foto5.jpg';
+import ColGranFoto6   from '../img/col-granate-foto6.jpg';
+import ColGranFoto7   from '../img/col-granate-foto7.jpg';
+import ColGranFoto8   from '../img/col-granate-foto8.jpg';
+import ColGranFoto9   from '../img/col-granate-foto9.jpg';
 
-import ColOrgFoto1    from '../img/col-organza-foto1.png';
-import ColOrgFoto2    from '../img/col-organza-foto2.png';
-import ColOrgFoto3    from '../img/col-organza-foto3.png';
-import ColOrgFoto4    from '../img/col-organza-foto4.png';
+import ColOrgFoto1    from '../img/col-organza-foto1.jpg';
+import ColOrgFoto2    from '../img/col-organza-foto2.jpg';
+import ColOrgFoto3    from '../img/col-organza-foto3.jpg';
+import ColOrgFoto4    from '../img/col-organza-foto4.jpg';
 
-import ColSalvFoto1   from '../img/col-salvia-foto1.png';
-import ColSalvFoto2   from '../img/col-salvia-foto2.png';
-import ColSalvFoto3   from '../img/col-salvia-foto3.png';
-import ColSalvFoto4   from '../img/col-salvia-foto4.png';
+import ColSalvFoto1   from '../img/col-salvia-foto1.jpg';
+import ColSalvFoto2   from '../img/col-salvia-foto2.jpg';
+import ColSalvFoto3   from '../img/col-salvia-foto3.jpg';
+import ColSalvFoto4   from '../img/col-salvia-foto4.jpg';
 
-import ColHaltFoto1   from '../img/col-halter-foto1.png';
-import ColHaltFoto2   from '../img/col-halter-foto2.png';
-import ColHaltFoto3   from '../img/col-halter-foto3.png';
-import ColHaltFoto4   from '../img/col-halter-foto4.png';
+import ColHaltFoto1   from '../img/col-halter-foto1.jpg';
+import ColHaltFoto2   from '../img/col-halter-foto2.jpg';
+import ColHaltFoto3   from '../img/col-halter-foto3.jpg';
+import ColHaltFoto4   from '../img/col-halter-foto4.jpg';
 
-import ColNoviScen    from '../img/col-novia-escenario.png';
-import ColColecGroup  from '../img/col-coleccion-grupo.png';
+import ColNoviScen    from '../img/col-novia-escenario.jpg';
+import ColColecGroup  from '../img/col-coleccion-grupo.jpg';
 import ColNovFoto1    from '../img/col-novia-foto1.png';
-import ColNovFoto2    from '../img/col-novia-foto2.png';
+import ColNovFoto2    from '../img/col-novia-foto2.jpg';
 import ColNovFoto3    from '../img/col-novia-foto3.png';
 import ColNovFoto4    from '../img/col-novia-foto4.png';
 
-import ProcCover      from '../img/proceso-diseno-terminado.png';
+import ProcCover      from '../img/proceso-diseno-terminado.jpg';
 import ProcClo06      from '../img/proceso-clo-06.png';
-import ProcClo11      from '../img/proceso-clo-11.png';
+import ProcClo11      from '../img/proceso-clo-11.jpg';
 
 import DoradoFoto1    from '../img/dorado-foto1.jpg';
 import DoradoFoto2    from '../img/dorado-foto2.jpg';
@@ -215,20 +215,20 @@ const PROJECTS = [
     number: '05',
     category: 'Diseño digital · CLO 3D · Colección 2025',
     title: 'Colección 3D',
-    subtitle: 'Seis diseños simulados en CLO 3D',
+    subtitle: 'Siete diseños simulados en CLO 3D',
     variant: 'cool',
     wide: false,
     year:'2025',
     location: 'Madrid, España',
     description:
-      'Colección completa de seis diseños digitales creados y simulados en CLO 3D como Trabajo Final del Grado en Tecnología y Moda de la Universidad Rey Juan Carlos. El concepto gira en torno a la recuperación de la inocencia tras la guerra, transitando de la gravedad del rojo oscuro y el blanco roto hasta la ligereza del salvia y el blanco nupcial.',
+      'Colección de seis diseños digitales creados y simulados en CLO 3D como Trabajo Final del Grado en Tecnología y Moda de la Universidad Rey Juan Carlos, junto a un séptimo diseño desarrollado en paralelo con el mismo software. El concepto gira en torno a la recuperación de la inocencia tras la guerra, transitando de la gravedad del rojo oscuro y el blanco roto hasta la ligereza del salvia y el blanco nupcial.',
     credits: [
       { label: 'Diseño y simulación', value: 'Aitana Núñez Ramírez' },
       { label: 'Software',            value: 'CLO 3D 2024.2' },
       { label: 'Institución',         value: 'URJC — Tecnología y Moda' },
     ],
     tags: ['CLO 3D', 'colección', 'simulación 3D', 'URJC', '2025'],
-    images: [ColBlancFoto3, ColGranFoto3, ColOrgFoto1, ColSalvFoto1, ColHaltFoto1, ColNovFoto1],
+    images: [ColBlancFoto3, ColGranFoto3, ColOrgFoto1, ColSalvFoto1, ColHaltFoto1, ColNovFoto2, ColNovFoto1],
     processImages: [ProcCover, ProcClo06, ProcClo11, ColColecGroup],
     coverBg: '#161410',
     image: ColBlancFoto3,
@@ -279,9 +279,17 @@ const PROJECTS = [
         number: '06',
         title: 'Novia con Cola',
         subtitle: 'Vestido de novia en seda satén',
-        description: 'Vestido con mangas muy abullonadas y cinturón drapeado. Tejido exterior en lino.',
+        description: 'Vestido de novia de cuerpo estructurado con tirantes finos y escote recto. La falda, de amplio vuelo, arranca en la cintura con pliegues profundos y se prolonga en una cola de caída limpia.',
         accent: '#8a8a9a',
-        images: [ColNovFoto1, ColNovFoto2, ColNovFoto3, ColNovFoto4],
+        images: [ColNoviScen, ColNovFoto2],
+      },
+      {
+        number: '07',
+        title: 'Mangas Granate',
+        subtitle: 'Mangas abullonadas y fajín drapeado',
+        description: 'Vestido con mangas muy abullonadas y cinturón drapeado. Tejido exterior en lino.',
+        accent: '#7a1a24',
+        images: [ColNovFoto1, ColNovFoto4, ColNovFoto3],
       },
     ],
   }, 

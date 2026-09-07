@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useLang } from '../context/LangContext';
 import Navbar  from '../components/Navbar';
 import Hero    from '../components/Hero';
 import Ticker  from '../components/Ticker';
@@ -13,6 +14,7 @@ import AboutMeImg from '../img/AitanaPerfil.jpg';
 import IntroImg from '../img/Intro.jpg';
 
 const HomePage = () => {
+  const { t } = useLang();
   // Navbar scrolled: añade clase al nav cuando se hace scroll
   useEffect(() => {
     const nav = document.querySelector('.navbar');
@@ -33,7 +35,7 @@ const HomePage = () => {
   return (
     <>
       {/* Primer tabulador de la página: salta el navbar y el ticker */}
-      <a href="#works" className="skip-link">Saltar al contenido</a>
+      <a href="#works" className="skip-link">{t('skip_to_content')}</a>
       <Navbar />
       <Hero heroImage={IntroImg} />
       <Reveal duration={0.9} seam><Ticker /></Reveal>

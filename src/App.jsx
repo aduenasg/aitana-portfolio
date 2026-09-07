@@ -18,6 +18,7 @@ import HomePage        from './pages/HomePage';
 import ProjectPage     from './pages/ProjectPage';
 import ProcessPage     from './pages/ProcessPage';
 import Coleccion3DPage from './pages/Coleccion3DPage';
+import StudiesPage     from './pages/StudiesPage';
 
 /* Todo lo que se puede pulsar y por tanto cierra el hilván del cursor */
 const CURSOR_INTERACTIVE =
@@ -134,6 +135,7 @@ const AppShell = () => {
             <Route path="/proyecto/:id"      element={<ProjectPage />} />
             <Route path="/proceso-clo3d"     element={<ProcessPage />} />
             <Route path="/coleccion-3d"      element={<Coleccion3DPage />} />
+            <Route path="/mis-estudios"      element={<StudiesPage />} />
           </Routes>
         )}
       </RouteTransition>

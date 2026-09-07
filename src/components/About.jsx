@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useLang } from '../context/LangContext';
 import Reveal from './Reveal';
+import CountUp from './CountUp';
 
 /* Cifras del bloque "sobre mí". Editar aquí para actualizarlas. */
 const STATS = [
@@ -9,37 +10,12 @@ const STATS = [
   { to: 0, suffix: '', labelKey: 'about_stat3_label' },
 ];
 
-const StatCounter = ({ to, suffix = '', label }) => {
-  const numRef  = useRef(null);
-  const started = useRef(false);
-  useEffect(() => {
-    const el = numRef.current;
-    if (!el) return;
-    started.current = false;
-    el.textContent = '0' + suffix;
-    const io = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting || started.current) return;
-      started.current = true;
-      const duration = 1400;
-      const start = performance.now();
-      const tick = (now) => {
-        const t = Math.min((now - start) / duration, 1);
-        const ease = 1 - Math.pow(1 - t, 3);
-        el.textContent = Math.round(ease * to) + suffix;
-        if (t < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    }, { threshold: 0.5 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, [to, suffix]);
-  return (
-    <div className="about__stat">
-      <span className="about__stat-num" ref={numRef}>0{suffix}</span>
-      <span className="about__stat-label">{label}</span>
-    </div>
-  );
-};
+const StatCounter = ({ to, suffix = '', label }) => (
+  <div className="about__stat">
+    <CountUp to={to} suffix={suffix} className="about__stat-num" />
+    <span className="about__stat-label">{label}</span>
+  </div>
+);
 
 const About = ({ aboutImage }) => {
   const { t } = useLang();
@@ -73,7 +49,11 @@ const About = ({ aboutImage }) => {
             en el margen izquierdo de esta columna, sobre el fondo. */}
         <span className="about__rotated-text" aria-hidden="true">Aitana</span>
         <Reveal as="p" className="about__label">{t('about_label')}</Reveal>
-        <Reveal as="blockquote" className="about__quote">{t('about_quote')}</Reveal>
+        {/* El nombre no se traduce, por eso vive aquí y no en translations. */}
+        <Reveal as="blockquote" className="about__quote">
+          {t('about_quote')}
+          <cite className="about__quote-author">— Hubert de Givenchy</cite>
+        </Reveal>
         <Reveal as="p" className="about__body">{t('about_body')}</Reveal>
         {/* Sólo se pintan las cifras con valor. Una casilla que cuenta
             hasta 0 ("Publicaciones · 0") resta en lugar de sumar; en
@@ -84,7 +64,7 @@ const About = ({ aboutImage }) => {
           ))}
         </Reveal>
         <Reveal as="div" className="about__actions">
-          <button className="btn">{t('about_studio')}</button>
+          <Link to="/mis-estudios" className="btn">{t('about_studio')}</Link>
           <a href="/Portfolio-Aitana-Nunez.pdf" download="Portfolio-2026-Aitana-Nunez.pdf" className="btn btn--gold">
             {t('about_kit')}
           </a>

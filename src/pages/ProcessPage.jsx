@@ -6,23 +6,24 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import { useLang } from '../context/LangContext';
 
 /* ── Imágenes de proceso ─────────────────────────────── */
-import ProcBotones       from '../img/proceso-botones.png';
-import ProcClo01         from '../img/proceso-clo-01.png';
-import ProcClo02         from '../img/proceso-clo-02.png';
-import ProcClo03         from '../img/proceso-clo-03.png';
-import ProcClo04         from '../img/proceso-clo-04.png';
-import ProcClo05         from '../img/proceso-clo-05.png';
+import ProcBotones       from '../img/proceso-botones.jpg';
+import ProcClo01         from '../img/proceso-clo-01.jpg';
+import ProcClo02         from '../img/proceso-clo-02.jpg';
+import ProcClo03         from '../img/proceso-clo-03.jpg';
+import ProcClo04         from '../img/proceso-clo-04.jpg';
+import ProcClo05         from '../img/proceso-clo-05.jpg';
 import ProcClo06         from '../img/proceso-clo-06.png';
-import ProcClo07         from '../img/proceso-clo-07.png';
-import ProcClo08         from '../img/proceso-clo-08.png';
-import ProcClo09         from '../img/proceso-clo-09.png';
-import ProcClo10         from '../img/proceso-clo-10.png';
-import ProcClo11         from '../img/proceso-clo-11.png';
-import ProcCremallera    from '../img/proceso-cremallera.png';
-import ProcDisenoTerm    from '../img/proceso-diseno-terminado.png';
-import ProcParticle      from '../img/proceso-particle.png';
+import ProcClo07         from '../img/proceso-clo-07.jpg';
+import ProcClo08         from '../img/proceso-clo-08.jpg';
+import ProcClo09         from '../img/proceso-clo-09.jpg';
+import ProcClo10         from '../img/proceso-clo-10.jpg';
+import ProcClo11         from '../img/proceso-clo-11.jpg';
+import ProcCremallera    from '../img/proceso-cremallera.jpg';
+import ProcDisenoTerm    from '../img/proceso-diseno-terminado.jpg';
+import ProcParticle      from '../img/proceso-particle.jpg';
 
 /* ── Datos de modelos ────────────────────────────────── */
 const MODELS = [
@@ -68,7 +69,7 @@ const MODELS = [
 ];
 
 /* ── Lightbox ────────────────────────────────────────── */
-const Lightbox = ({ src, caption, onClose }) => {
+const Lightbox = ({ src, caption, onClose, closeLabel }) => {
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', onKey);
@@ -77,7 +78,7 @@ const Lightbox = ({ src, caption, onClose }) => {
 
   return (
     <div className="process-lightbox" onClick={onClose}>
-      <button className="process-lightbox__close" aria-label="Cerrar">✕</button>
+      <button className="process-lightbox__close" aria-label={closeLabel} onClick={onClose}>✕</button>
       <div className="process-lightbox__inner" onClick={(e) => e.stopPropagation()}>
         <img src={src} alt={caption} className="process-lightbox__img" />
         {caption && <p className="process-lightbox__caption">{caption}</p>}
@@ -88,7 +89,25 @@ const Lightbox = ({ src, caption, onClose }) => {
 
 /* ── Página principal ────────────────────────────────── */
 const ProcessPage = () => {
+  const { t } = useLang();
   const [lightbox, setLightbox] = useState(null); // { src, caption }
+
+  /* Traducción: mismo criterio que ProjectPage/Coleccion3DPage — cae
+     al español de MODELS campo a campo cuando falta el dato. Los
+     modelos y sus pasos no tienen id propio, así que se emparejan por
+     índice con processPage.models de translations.js (mismo orden y
+     longitud que MODELS). */
+  const pp = t('processPage');
+  const trModels = pp.models || [];
+  const displayModels = MODELS.map((model, mi) => ({
+    ...model,
+    title: trModels[mi]?.title || model.title,
+    subtitle: trModels[mi]?.subtitle || model.subtitle,
+    steps: model.steps.map((step, si) => ({
+      ...step,
+      caption: trModels[mi]?.steps?.[si] || step.caption,
+    })),
+  }));
 
   return (
     <div className="process-page">
@@ -102,11 +121,10 @@ const ProcessPage = () => {
             viaje lateral asomaría por el borde de la pantalla. */}
         <div className="process-hero__bg-text animate-on-scroll reveal-zoom reveal-slow" aria-hidden="true">CLO3D</div>
         <div className="process-hero__content reveal-stagger">
-          <p className="process-hero__label animate-on-scroll reveal-up reveal-near reveal-fast">Proceso creativo · Diseño digital</p>
-          <h1 className="process-hero__title animate-on-scroll reveal-up">Behind the<span className="process-hero__title--italic"> collection.</span></h1>
+          <p className="process-hero__label animate-on-scroll reveal-up reveal-near reveal-fast">{pp.heroLabel}</p>
+          <h1 className="process-hero__title animate-on-scroll reveal-up">{pp.heroTitle}<span className="process-hero__title--italic">{pp.heroTitleItalic}</span></h1>
           <p className="process-hero__sub animate-on-scroll reveal-up reveal-near">
-            Documentación del proceso de diseño y simulación en CLO 3D —
-            trabajo final del Grado en Tecnología y Moda, Universidad Rey Juan Carlos 2025.
+            {pp.heroSub}
           </p>
         </div>
         <div className="process-hero__meta reveal-stagger reveal-stagger--tight">
@@ -115,11 +133,11 @@ const ProcessPage = () => {
             <span className="process-hero__meta-value">CLO 3D 2024.2</span>
           </div>
           <div className="process-hero__meta-item animate-on-scroll reveal-up reveal-near reveal-fast">
-            <span className="process-hero__meta-label">Modelos</span>
-            <span className="process-hero__meta-value">0{MODELS.length} diseños</span>
+            <span className="process-hero__meta-label">{t('c3d_models_label')}</span>
+            <span className="process-hero__meta-value">0{MODELS.length} {t('c3d_designs_suffix')}</span>
           </div>
           <div className="process-hero__meta-item animate-on-scroll reveal-up reveal-near reveal-fast">
-            <span className="process-hero__meta-label">Institución</span>
+            <span className="process-hero__meta-label">{t('c3d_institution_label')}</span>
             <span className="process-hero__meta-value">URJC Madrid</span>
           </div>
         </div>
@@ -127,7 +145,7 @@ const ProcessPage = () => {
 
       {/* ── Cuerpo por modelos ── */}
       <div className="process-body">
-        {MODELS.map((model, mi) => (
+        {displayModels.map((model, mi) => (
           <section
             key={model.number}
             className="process-model"
@@ -141,7 +159,7 @@ const ProcessPage = () => {
                 <p className="process-model__subtitle">{model.subtitle}</p>
               </div>
               <span className="process-model__count">
-                {String(model.steps.length).padStart(2, '0')} capturas
+                {String(model.steps.length).padStart(2, '0')} {pp.captures}
               </span>
             </div>
 
@@ -158,7 +176,7 @@ const ProcessPage = () => {
                   className="process-step animate-on-scroll reveal-up reveal-near"
                   style={{ '--reveal-index': si % 3 }}
                   onClick={() => setLightbox({ src: step.img, caption: step.caption })}
-                  aria-label={`Ampliar: ${step.caption}`}
+                  aria-label={`${pp.enlarge}: ${step.caption}`}
                 >
                   <div className="process-step__img-wrap">
                     <img src={step.img} alt={step.caption} className="process-step__img" />
@@ -188,8 +206,8 @@ const ProcessPage = () => {
 
       {/* ── Footer ── */}
       <footer className="footer animate-on-scroll reveal-up reveal-near reveal-fast">
-        <span className="footer__copy">© 2026 Aitana Núñez</span>
-        <Link to="/#works" className="footer__name">← Volver a proyectos</Link>
+        <span className="footer__copy">{t('footer_copy')}</span>
+        <Link to="/#works" className="footer__name">{pp.backToProjects}</Link>
         <nav className="footer__social">
           <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">IG</a>
           <a href="https://linkedin.com"  target="_blank" rel="noopener noreferrer">LI</a>
@@ -203,6 +221,7 @@ const ProcessPage = () => {
           src={lightbox.src}
           caption={lightbox.caption}
           onClose={() => setLightbox(null)}
+          closeLabel={pp.close}
         />
       )}
     </div>
