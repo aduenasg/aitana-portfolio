@@ -2393,6 +2393,30 @@ body:not(.cursor--active) .cursor-ring {
   .study-chapter--alt .study-chapter__flip-cue { flex-direction: row; }
   .study-chapter--alt .study-chapter__honor-text { text-align: left; }
   .study-chapter--alt .study-chapter__ghost { right: -0.06em; left: auto; }
+
+  /* El giro 3D (rotateY + backface-visibility) es poco fiable en
+     navegadores móviles: según el motor, la cara trasera se queda
+     pintada encima de la delantera en vez de ocultarse, y las dos
+     se leen a la vez. En pantallas estrechas —donde además ya no
+     hace falta igualar la altura de tres tarjetas en fila— se
+     sustituye el giro por un simple cambio de cara: solo una está
+     en el documento a la vez, así que no hay solape posible. */
+  .study-chapter__flip { perspective: none; }
+  .study-chapter__flip-inner {
+    display: block;
+    transform: none !important;
+    transition: none;
+  }
+  .study-chapter__face {
+    grid-row: auto;
+    grid-column: auto;
+  }
+  .study-chapter__face--back {
+    display: none;
+    transform: none;
+  }
+  .study-chapter__flip-inner.is-flipped .study-chapter__face--front { display: none; }
+  .study-chapter__flip-inner.is-flipped .study-chapter__face--back { display: flex; }
 }
 
 /* ═══════════════════════════════════════════════════════════════
