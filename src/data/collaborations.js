@@ -11,10 +11,10 @@ const COLLABORATIONS = [
   {
     id: 'colab-01',
     brand: 'Raquel Trespalacios Martínez',
-    title: 'Vestido de invitada a medida',
+    title: 'Cortar es pensar',
     year: '2024',
-    role: 'Diseño y confección',
-    description: 'Diseño y confección a medida de un vestido largo con hombros de volumen escultórico, para una boda al aire libre.',
+    role: 'Colaboración en el diseño',
+    description: 'Proyecto diseñado por Raquel Trespalacios,\ncon mi colaboración en el desarrollo y la confección.',
     image: ColRaquel,
   },
 ];

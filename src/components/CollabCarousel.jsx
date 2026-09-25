@@ -70,6 +70,7 @@ const CollabCarousel = () => {
 
   const current = COLLABORATIONS[center];
   const currentTr = tc(current.id);
+  const displayTitle = currentTr.title || current.title;
   const displayDescription = currentTr.description || current.description;
 
   return (
@@ -98,7 +99,7 @@ const CollabCarousel = () => {
 
         {/* Texto + navegación inferior izquierda */}
         <div className="collab-carousel__info">
-          <p className="collab-carousel__brand">{current.brand}</p>
+          {displayTitle && <p className="collab-carousel__title">{displayTitle}</p>}
           <p className="collab-carousel__desc">{displayDescription}</p>
           <div className="collab-carousel__nav">
             <button onClick={() => navigate('prev')} aria-label={t('carousel_prev_aria')} disabled={isAnimating}>

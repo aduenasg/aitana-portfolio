@@ -279,9 +279,9 @@ const translations = {
     // Colaboraciones
     collaborations: {
       'colab-01': {
-        title: 'Vestido de invitada a medida',
-        role: 'Diseño y confección',
-        description: 'Diseño y confección a medida de un vestido largo con hombros de volumen escultórico, para una boda al aire libre.',
+        title: 'Cortar es pensar',
+        role: 'Colaboración en el diseño',
+        description: 'Proyecto diseñado por Raquel Trespalacios,\ncon mi colaboración en el desarrollo y la confección.',
       },
     },
   },
@@ -560,9 +560,9 @@ const translations = {
 
     collaborations: {
       'colab-01': {
-        title: 'Custom Guest Dress',
-        role: 'Design & making',
-        description: 'Custom design and construction of a long dress with sculptural volume shoulders, for an outdoor wedding.',
+        title: 'To cut is to think',
+        role: 'Design collaboration',
+        description: 'Project designed by Raquel Trespalacios,\nwith my collaboration in development and construction.',
       },
     },
   },
@@ -841,9 +841,9 @@ const translations = {
 
     collaborations: {
       'colab-01': {
-        title: "Robe d'invitée sur mesure",
-        role: 'Design et confection',
-        description: "Design et confection sur mesure d'une robe longue aux épaules au volume sculptural, pour un mariage en plein air.",
+        title: 'Couper, c\'est penser',
+        role: 'Collaboration au design',
+        description: 'Projet conçu par Raquel Trespalacios,\navec ma collaboration au développement et à la confection.',
       },
     },
   },
@@ -1122,9 +1122,9 @@ const translations = {
 
     collaborations: {
       'colab-01': {
-        title: 'Abito da invitata su misura',
-        role: 'Design e confezione',
-        description: "Design e confezione su misura di un abito lungo con spalle dal volume scultoreo, per un matrimonio all'aperto.",
+        title: 'Tagliare è pensare',
+        role: 'Collaborazione al design',
+        description: 'Progetto disegnato da Raquel Trespalacios,\ncon la mia collaborazione nello sviluppo e nella confezione.',
       },
     },
   },
