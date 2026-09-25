@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import COLLABORATIONS from '../data/collaborations';
 import { useLang } from '../context/LangContext';
@@ -16,10 +16,43 @@ const CollabCarousel = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isCompact, setIsCompact] = useState(false);
+  const [photoBox, setPhotoBox] = useState(null);
   const lockRef = useRef(false);
+  const stageRef = useRef(null);
+  const centerRef = useRef(null);
+
+  /* El bloque de texto debe quedar encajado exactamente sobre la foto
+     central (mismo ancho, apoyado en su borde inferior). Como esa foto
+     se dimensiona con aspect-ratio + scale() en roleStyle(), medimos su
+     caja real en pantalla en vez de replicar esa aritmética en CSS. */
+  const measurePhoto = () => {
+    if (!stageRef.current || !centerRef.current) return;
+    const stageRect = stageRef.current.getBoundingClientRect();
+    const photoRect = centerRef.current.getBoundingClientRect();
+    const next = {
+      left: photoRect.left - stageRect.left,
+      width: photoRect.width,
+      bottom: stageRect.bottom - photoRect.bottom,
+    };
+    setPhotoBox((prev) => (
+      prev && prev.left === next.left && prev.width === next.width && prev.bottom === next.bottom
+        ? prev
+        : next
+    ));
+  };
+
+  useLayoutEffect(() => {
+    measurePhoto();
+  }, [isMobile, isCompact, activeIndex]);
 
   useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth < 640);
+    const onResize = () => {
+      setIsMobile(window.innerWidth < 640);
+      setIsCompact(window.innerWidth < 900);
+      measurePhoto();
+      setTimeout(measurePhoto, 700);
+    };
     onResize();
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
@@ -30,7 +63,7 @@ const CollabCarousel = () => {
     lockRef.current = true;
     setIsAnimating(true);
     setActiveIndex((prev) => (dir === 'next' ? (prev + 1) % total : (prev + total - 1) % total));
-    setTimeout(() => { lockRef.current = false; setIsAnimating(false); }, 650);
+    setTimeout(() => { lockRef.current = false; setIsAnimating(false); measurePhoto(); }, 650);
   };
 
   const center = activeIndex;
@@ -75,7 +108,7 @@ const CollabCarousel = () => {
 
   return (
     <div className="collab-carousel">
-      <div className="collab-carousel__stage">
+      <div className="collab-carousel__stage" ref={stageRef}>
 
         {/* Grano de textura */}
         <div className="collab-carousel__grain" aria-hidden="true" />
@@ -90,7 +123,12 @@ const CollabCarousel = () => {
             const role = i === center ? 'center' : i === left ? 'left' : i === right ? 'right' : i === back ? 'back' : null;
             if (!role) return null;
             return (
-              <div key={c.id} className="collab-carousel__item" style={roleStyle(role)}>
+              <div
+                key={c.id}
+                className="collab-carousel__item"
+                style={roleStyle(role)}
+                ref={role === 'center' ? centerRef : null}
+              >
                 <img src={c.image} alt={c.brand} draggable="false" />
               </div>
             );
@@ -98,7 +136,10 @@ const CollabCarousel = () => {
         </div>
 
         {/* Texto + navegación inferior izquierda */}
-        <div className="collab-carousel__info">
+        <div
+          className="collab-carousel__info"
+          style={isCompact && photoBox ? { left: photoBox.left, width: photoBox.width, bottom: photoBox.bottom } : undefined}
+        >
           {displayTitle && <p className="collab-carousel__title">{displayTitle}</p>}
           <p className="collab-carousel__desc">{displayDescription}</p>
           <div className="collab-carousel__nav">

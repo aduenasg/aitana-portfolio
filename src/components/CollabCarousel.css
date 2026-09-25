@@ -102,10 +102,23 @@
 .collab-carousel__info {
   position: absolute;
   z-index: 60;
-  bottom: var(--space-md); left: var(--space-sm);
-  max-width: 320px;
+  box-sizing: border-box;
+  bottom: 0;
+  inset-inline: 0;
+  background: rgba(0, 0, 0, 0.28);
+  padding: var(--space-sm) var(--space-md);
 }
-@media (min-width: 640px) { .collab-carousel__info { bottom: var(--space-2xl); left: var(--space-2xl); } }
+@media (min-width: 640px) { .collab-carousel__info { padding: var(--space-lg) var(--space-2xl); } }
+@media (min-width: 900px) {
+  .collab-carousel__info {
+    inset-inline: auto;
+    left: var(--space-2xl);
+    bottom: var(--space-2xl);
+    max-width: 320px;
+    background: none;
+    padding: 0;
+  }
+}
 .collab-carousel__title {
   font-family: var(--font-display);
   font-size: var(--text-lg);
