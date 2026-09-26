@@ -15,8 +15,8 @@ const CollabCarousel = () => {
   const total = COLLABORATIONS.length;
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [isCompact, setIsCompact] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+  const [isCompact, setIsCompact] = useState(() => window.innerWidth < 900);
   const [photoBox, setPhotoBox] = useState(null);
   const lockRef = useRef(false);
   const stageRef = useRef(null);
